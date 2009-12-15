@@ -81,7 +81,7 @@ public class Chat extends ListActivity {
     private static final int DISCONNECT = Menu.FIRST + 2;
     private static final int SHOW_USER_LIST = Menu.FIRST + 3;
 
-    private static final int MINIMUM_GESTURE_DISTANCE = 50;
+    private static final int MINIMUM_GESTURE_DISTANCE = 25;
     private ProgressDialog pd;
     public AlertDialog mInfoDialog;
 
@@ -401,7 +401,7 @@ public class Chat extends ListActivity {
     	}).show();
     }
     
-    private static class ChatAdapter extends BaseAdapter {
+    private class ChatAdapter extends BaseAdapter {
         private Vector<String> mSenders;
         private Vector<String> mMessages;
         private Context mCtx;
@@ -456,7 +456,7 @@ public class Chat extends ListActivity {
             holder.setText(ChatMessageFormattedString(mSenders.elementAt(pos), mMessages.elementAt(pos)));
 
             Linkify.addLinks(holder, Linkify.ALL);
-
+            
             return convertView;
         }
 
