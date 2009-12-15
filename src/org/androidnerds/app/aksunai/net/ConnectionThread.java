@@ -40,7 +40,8 @@ public class ConnectionThread implements Runnable {
     private String mPassword;
     private String mRealName;
     private int mPort;
-
+    private volatile boolean kill = false;
+    
     public static final int IRC_PORT = 6667;
 
     public ConnectionThread(String url, String nick, String user, String password, int port, String realName, Server server) {
@@ -68,11 +69,20 @@ public class ConnectionThread implements Runnable {
         try {
             mSock.close();
             mServer.state = Server.STATE_DISCONNECTED;
+            requestKill();
         } catch (IOException e) {
             if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught on ConnectionThread disconnect: (Server) " + mServer + ", (Exception) " + e.toString());
         }
     }
 
+    private synchronized void requestKill() {
+    	kill = true;
+    }
+    
+    private synchronized boolean shouldKill() {
+    	return kill;
+    }
+    
     //TODO: figure out the best way to terminate the process on the user side for the connection exceptions.
     public void run() {
         try {
@@ -105,6 +115,7 @@ public class ConnectionThread implements Runnable {
 
         try {
             while ((line = mServer.reader.readLine()) != null) {
+            	
                 if (MyConfig.DEBUG) Log.d("Aksunai", "Server Message: " + line);
 
                 if (line.indexOf("001") >= 0) {
@@ -169,7 +180,9 @@ public class ConnectionThread implements Runnable {
 
         //watch for server messages.
         try {
-            while ((line = mServer.reader.readLine()) != null) {
+            while (!shouldKill()) {
+            	line = mServer.reader.readLine();
+            	
                 if (line.startsWith("PING")) {
                     mServer.writer.write("PONG " + line.substring(5) + "\r\n");
                     mServer.writer.flush();
@@ -180,5 +193,7 @@ public class ConnectionThread implements Runnable {
         } catch (IOException e) {
             if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught handling messages. (Server) " + mServer + ", (Exception) " + e.toString());
         }
+        
+        return;
     }
 }

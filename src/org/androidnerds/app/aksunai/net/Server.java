@@ -146,7 +146,7 @@ public class Server {
     public void closeConnection() {
         sendMessage("/quit");
         mConnectionThread.disconnect();
-        mThread.interrupt();
+        
         if (ConnectionService.STATE_CHAT_WINDOW == Chat.STATE_WINDOW_OPEN) {
             Message.obtain(mHandler, Server.STATE_DISCONNECTED, mName).sendToTarget();
         }
