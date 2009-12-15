@@ -48,7 +48,7 @@
         <activity android:name=".ui.ServerDetail" android:configChanges="orientation"></activity>
         <activity android:name=".ui.Chat" android:theme="@android:style/Theme.Light" android:configChanges="orientation"></activity>
         <activity android:name=".ui.UserList" android:configChanges="orientation"></activity>
-        <activity android:name=".Preferences" android:configChanges="orientation"></activity>
+        <activity android:name=".preferences.Preferences" android:configChanges="orientation"></activity>
         
    		<service android:name=".net.ConnectionService" android:label="Connection Manager"></service>
     </application>

@@ -40,6 +40,14 @@
 	       android:title="@string/pref_notification_bar_label"
 	       android:summary="@string/pref_notification_bar_desc" />
 	       
+	   <org.androidnerds.app.aksunai.preferences.AkRingtonePreference
+                android:layout="?android:attr/preferenceLayoutChild"
+                android:dependency="pref_notification_bar"
+                android:key="notification-ringtone"
+                android:persistent="false"
+                android:title="@string/notification_ringtone_title"
+                android:ringtoneType="notification" />
+                
 	</PreferenceCategory>
 	
 	<PreferenceCategory
