@@ -89,6 +89,8 @@
     <string name="pref_notification_bar_label">Chat Notifications</string>
     <string name="pref_notification_bar_desc">Notify when your nick is said or pm arrives.</string>
     <string name="notification_ringtone_title">Select ringtone</string>
+    <string name="pref_notification_vibrate_title">Vibrate</string>
+    <string name="pref_notification_vibrate_desc">Also vibrate when message received.</string>
     
     <string name="logging_pref_label">Logging Settings</string>
     <string name="pref_logging_enabled_label">Enabled Chat Logging</string>
