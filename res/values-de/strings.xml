@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Server Liste</string>
+    <string name="server_detail_title">Aksunai - Server Details</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">Neuer Server</string>
+    <string name="create_new_server">Neuen Server hinzufügen</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">Fertig</string>
+    <string name="cancel_label">Abbrechen</string>
+    <string name="title_label">Titel</string>
+    <string name="address_label">Server URL</string>
+    <string name="username_label">Benutzername</string>
+    <string name="nick_label">Nickname</string>
+    <string name="password_label">Passwort</string>
+    <string name="port_label">Port</string>
+    <string name="real_name_label">Name</string>
+    <string name="ui_getstarted">Hier kann der Text eingetragen werden. Absenden mit ENTER!</string>
+    <string name="empty_chat_list">Keine aktiven Chats.</string>
+    <string name="connecting">Verbinde...</string>
+    <string name="connecting_to">Verbinde zu</string>
+    <string name="empty_user_list">Keine Benutzer in diesem Raum!</string>
+    <string name="send">Absenden</string>
+    <string name="incoming_message">Neue IRC Nachricht</string>
+    <string name="new_private_chat">Neue private Nachricht</string>
+    <string name="no_channel">Fehler: Kein aktiver Raum.</string>
+    <string name="authenticated">Du wurdest authentifiziert.</string>
+    <string name="unknown_command">Unbekannter Befehl</string>
+    <string name="required_fields">Titel, Server, Port, Benutzername und Nickname müssen ausgefüllt werden</string>
+    <string name="no_network_connection">Internetverbindung ist nicht verfügbar</string>
+    <string name="me">ich</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Chats</string>
+    <string name="close">Schließen</string>
+    <string name="disconnect">Verbindung unterbrechen</string>
+    <string name="show_users">Zeige Benutzer</string>
+    <string name="menu_new_server">Neuer Server</string>
+    <string name="settings">Einstellungen</string>
+    <string name="quick_connect">Schnellverbindung</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Optionen</string>
+    <string name="private_message">Private Nachricht</string>
+    <string name="info">Info</string>
+    <string name="ignore">Ignorieren</string>
+    <string name="connect">Verbinden</string>
+    <string name="edit">Editieren</string>
+    <string name="remove">Entfernen</string>
+    <string name="menu_disconnect">Verbindung unterbrechen</string>
+    <string name="menu_server_options">Server Options</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Nickname:</string>
+    <string name="info_username">Benutzername:</string>
+    <string name="info_realname">Name:</string>
+    <string name="info_server">Server: </string>
+    <string name="info_channels">Räume:</string>
+    <string name="info_title_part">Information für</string>
+    
+    <!-- Preference Strings -->
+    <string name="general_pref_label">Allgemeine Einstellungen</string>
+    <string name="pref_large_font_label">Große Schrift verwenden</string>
+    
+    <string name="logging_pref_label">Log Einstellungen</string>
+    <string name="pref_logging_enabled_label">Logging aktivieren</string>
+    <string name="pref_only_notify_nick">Nur loggen wenn eigener Name angesprochen wird</string>
+    
+    <string name="connection_settings_label">Verbindungseinstellungen</string>
+    <string name="pref_autoconnect_servers">Automatische Verbindung zum Server</string>
+</resources>

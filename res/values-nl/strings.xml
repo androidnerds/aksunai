@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Server Lijst</string>
+    <string name="server_detail_title">Aksunai - Server Details</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">Nieuwe server</string>
+    <string name="create_new_server">Voeg een nieuwe server toe</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">OK</string>
+    <string name="cancel_label">Annuleren</string>
+    <string name="title_label">Titel</string>
+    <string name="address_label">Server URL</string>
+    <string name="username_label">Gebruikersnaam</string>
+    <string name="nick_label">Nickname</string>
+    <string name="password_label">Wachtwoord</string>
+    <string name="ui_getstarted">Typ hier en druk op enter om te chatten!</string>
+    <string name="empty_chat_list">Geen active chats.</string>
+    <string name="connecting">Verbinden...</string>
+    <string name="connecting_to">Verbinden met</string>
+    <string name="empty_user_list">Er is niemand in dit kanaal!</string>
+    <string name="send">Verzenden</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Chats</string>
+    <string name="close">Sluiten</string>
+    <string name="disconnect">Verbinding verbreken</string>
+    <string name="show_users">Toon gebruikers</string>
+    <string name="menu_new_server">Nieuwe server</string>
+    <string name="settings">Instellingen</string>
+    <string name="quick_connect">Snelverbinden</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Opties</string>
+    <string name="private_message">Privébericht</string>
+    <string name="info">Info</string>
+    <string name="ignore">Negeren</string>
+    <string name="connect">Verbinden</string>
+    <string name="edit">Bewerken</string>
+    <string name="remove">Verwijderen</string>
+    <string name="menu_disconnect">Verbinding verbreken</string>
+    <string name="menu_server_options">Server opties</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Nickname:</string>
+    <string name="info_username">Gebruikersnaam:</string>
+    <string name="info_realname">Echte naam:</string>
+    <string name="info_server">Server: </string>
+    <string name="info_channels">Kanalen:</string>
+    <string name="info_title_part">Info voor</string>
+</resources>

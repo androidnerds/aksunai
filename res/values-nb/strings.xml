@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Serverliste</string>
+    <string name="server_detail_title">Aksunai - Serverdetaljer</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">Ny server</string>
+    <string name="create_new_server">Legg til ny server</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">Ferdig</string>
+    <string name="cancel_label">Angre</string>
+    <string name="title_label">Tittel</string>
+    <string name="address_label">Server URL</string>
+    <string name="username_label">Brukernavn</string>
+    <string name="nick_label">Kallenavn</string>
+    <string name="password_label">Passord</string>
+    <string name="port_label">Port</string>
+    <string name="real_name_label">Ekte navn</string>
+    <string name="ui_getstarted">Skriv her og trykk enter for å starte samtalen!</string>
+    <string name="empty_chat_list">Ingen aktiv samtale.</string>
+    <string name="connecting">Kobler opp...</string>
+    <string name="connecting_to">Kobler til</string>
+    <string name="empty_user_list">Ingen brukere i denne kanalen!</string>
+    <string name="send">Send</string>
+    <string name="incoming_message">Ny IRC Melding</string>
+    <string name="new_private_chat">Ny Privat Melding</string>
+    <string name="no_channel">Feil: Ingen aktiv kanal.</string>
+    <string name="authenticated">Du har ikke blitt autorisert.</string>
+    <string name="unknown_command">Ukjent kommando</string>
+    <string name="required_fields">Tittel, Server, Port, Brukernavn, og Kallenavn kreves</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Samtaler</string>
+    <string name="close">Lukk</string>
+    <string name="disconnect">Koble fra</string>
+    <string name="show_users">Vis brukere</string>
+    <string name="menu_new_server">Ny server</string>
+    <string name="settings">Innstillinger</string>
+    <string name="quick_connect">Hurtingtilkobling</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Egenskaper</string>
+    <string name="private_message">Privat Melding</string>
+    <string name="info">Informasjon</string>
+    <string name="ignore">Ignorer</string>
+    <string name="connect">Koble til</string>
+    <string name="edit">Rediger</string>
+    <string name="remove">Fjern</string>
+    <string name="menu_disconnect">Koble fra</string>
+    <string name="menu_server_options">Serveregenskaper</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Kallenavn:</string>
+    <string name="info_username">Brukernavn:</string>
+    <string name="info_realname">Ekte navn:</string>
+    <string name="info_server">Server: </string>
+    <string name="info_channels">Kanaler:</string>
+    <string name="info_title_part">Informasjon for</string>
+    
+    <!-- Preference Strings -->
+    <string name="general_pref_label">Generelle innstillinger</string>
+    <string name="pref_large_font_label">Bruk stor tekst</string>
+    
+    <string name="logging_pref_label">Innstillinger For Logging</string>
+    <string name="pref_logging_enabled_label">Aktiver Samtalelogging</string>
+    <string name="pref_only_notify_nick">Only log when nick is said</string>
+    
+    <string name="connection_settings_label">Tilkoblingsinnstillinger</string>
+    <string name="pref_autoconnect_servers">Autotilkoble Servere</string>
+</resources>

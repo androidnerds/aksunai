@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Liste des serveurs</string>
+    <string name="server_detail_title">Aksunai - Détail des serveurs</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">Nouveau serveur</string>
+    <string name="create_new_server">Ajouter un nouveau serveur</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">Sauver</string>
+    <string name="cancel_label">Annuler</string>
+    <string name="title_label">Titre</string>
+    <string name="address_label">URL du serveur</string>
+    <string name="username_label">Nom d'utilisateur</string>
+    <string name="nick_label">Pseudo</string>
+    <string name="password_label">Mot de passe</string>
+    <string name="port_label">Port</string>
+    <string name="real_name_label">Nom réel</string>
+    <string name="ui_getstarted">Ecrivez ici et appuyez sur entrée pour discuter!</string>
+    <string name="empty_chat_list">Pas de tchats actifs.</string>
+    <string name="connecting">Connexion...</string>
+    <string name="connecting_to">Connexion à</string>
+    <string name="empty_user_list">Pas d'utilisateurs dans ce salon!</string>
+    <string name="send">Envoyer</string>
+    <string name="incoming_message">Nouveau Message IRC</string>
+    <string name="new_private_chat">Nouveau Message Privé</string>
+    <string name="no_channel">Erreur: pas de salon actif.</string>
+    <string name="authenticated">Vous avez été authentifié.</string>
+    <string name="unknown_command">Commande Inconnue</string>
+    <string name="required_fields">Titre, Serveur, Port, Nom d'utilisateur et Pseudo sont requis</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Tchats</string>
+    <string name="close">Fermer</string>
+    <string name="disconnect">Déconnecter</string>
+    <string name="show_users">Afficher les utilisateurs</string>
+    <string name="menu_new_server">Nouveau serveur</string>
+    <string name="settings">Paramètres</string>
+    <string name="quick_connect">Connexion rapide</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Options</string>
+    <string name="private_message">Message privé</string>
+    <string name="info">Info</string>
+    <string name="ignore">Ignorer</string>
+    <string name="connect">Connecter</string>
+    <string name="edit">Editer</string>
+    <string name="remove">Supprimer</string>
+    <string name="menu_disconnect">Déconnecter</string>
+    <string name="menu_server_options">Options du serveur</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Pseudo:</string>
+    <string name="info_username">Nom d'utilisateur:</string>
+    <string name="info_realname">Nom réel:</string>
+    <string name="info_server">Serveur: </string>
+    <string name="info_channels">Salons:</string>
+    <string name="info_title_part">Info pour</string>
+    
+    <!-- Preference Strings -->
+    <string name="general_pref_label">Paramètres Généraux</string>
+    <string name="pref_large_font_label">Utiliser une grande police</string>
+    
+    <string name="logging_pref_label">Paramètres d'enregistrements</string>
+    <string name="pref_logging_enabled_label">Activer l'enregistrement des tchats</string>
+    <string name="pref_only_notify_nick">N'enregistrer que si le pseudo est cité</string>
+    
+    <string name="connection_settings_label">Paramètres de connexion</string>
+    <string name="pref_autoconnect_servers">Autoconnecter les serveurs</string>
+</resources>

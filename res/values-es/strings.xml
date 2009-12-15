@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Lista de Servidores</string>
+    <string name="server_detail_title">Aksunai - Detalles de Servidor</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">Nuevo Servidor</string>
+    <string name="create_new_server">Añadir nuevo servidor</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">Listo</string>
+    <string name="cancel_label">Cancelar</string>
+    <string name="title_label">Título</string>
+    <string name="address_label">URL de Servidor</string>
+    <string name="username_label">Nombre de usuario</string>
+    <string name="nick_label">Apodo</string>
+    <string name="password_label">Clave</string>
+    <string name="ui_getstarted">Escriba aqui y presione enter para empezar a chatear!</string>
+    <string name="empty_chat_list">No hay Chats Activos.</string>
+    <string name="connecting">Conectando...</string>
+    <string name="connecting_to">Conectando a</string>
+    <string name="empty_user_list">No hay usuarios en este canal!</string>
+    <string name="send">Enviar</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Chats</string>
+    <string name="close">Cerrar</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="show_users">Mostrar Usuarios</string>
+    <string name="menu_new_server">Nuevo Servidor</string>
+    <string name="settings">Opciones</string>
+    <string name="quick_connect">Conección Rapida</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Opciones</string>
+    <string name="private_message">Mensaje Privado</string>
+    <string name="info">Información</string>
+    <string name="ignore">Ignorar</string>
+    <string name="connect">Conectar</string>
+    <string name="edit">Editar</string>
+    <string name="remove">Eliminar</string>
+    <string name="menu_disconnect">Desconectar</string>
+    <string name="menu_server_options">Opciones del Servidor</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Apodo:</string>
+    <string name="info_username">Nombre de usuario:</string>
+    <string name="info_realname">Nombre Real:</string>
+    <string name="info_server">Servidor: </string>
+    <string name="info_channels">Cananles:</string>
+    <string name="info_title_part">Información para</string>
+</resources>

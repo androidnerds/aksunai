@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2009 AndroidNerds.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<resources>
+    <string name="app_name">Aksunai</string>
+    <string name="server_activity_title">Aksunai - Server List</string>
+    <string name="server_detail_title">Aksunai - Server Details</string>
+    
+    <!-- Server Related Items -->
+    <string name="new_server">New Server</string>
+    <string name="create_new_server">Add a new server</string>
+    
+    <!-- User Interface Items -->
+    <string name="done_label">Done</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="title_label">Title</string>
+    <string name="address_label">Server URL</string>
+    <string name="username_label">Username</string>
+    <string name="nick_label">Nickname</string>
+    <string name="password_label">Password</string>
+    <string name="port_label">Port</string>
+    <string name="real_name_label">Real Name</string>
+    <string name="ui_getstarted">Type here and press enter to start chatting!</string>
+    <string name="empty_chat_list">No Active Chats.</string>
+    <string name="connecting">Connecting...</string>
+    <string name="connecting_to">Connecting to</string>
+    <string name="empty_user_list">No users in this channel!</string>
+    <string name="send">Send</string>
+    <string name="incoming_message">New IRC Message</string>
+    <string name="new_private_chat">New Private Message</string>
+    <string name="no_channel">Error: no active channel.</string>
+    <string name="authenticated">You have been authenticated.</string>
+    <string name="unknown_command">Unknown Command</string>
+    <string name="required_fields">Title, Server, Port, Username, and Nickname are required</string>
+    <string name="no_network_connection">No network connection is available</string>
+    <string name="me">me</string>
+    
+    <!-- Menu Items -->
+    <string name="chats">Chats</string>
+    <string name="close">Close</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="show_users">Show Users</string>
+    <string name="menu_new_server">New Server</string>
+    <string name="settings">Settings</string>
+    <string name="quick_connect">Quick Connect</string>
+    
+    <!-- Context Menu Items -->
+    <string name="options">Options</string>
+    <string name="private_message">Private Message</string>
+    <string name="info">Info</string>
+    <string name="ignore">Ignore</string>
+    <string name="connect">Connect</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_server_options">Server Options</string>
+    
+    <!-- Chat Info Dialog -->
+    <string name="info_nickname">Nickname:</string>
+    <string name="info_username">Username:</string>
+    <string name="info_realname">Real Name:</string>
+    <string name="info_server">Server: </string>
+    <string name="info_channels">Channels:</string>
+    <string name="info_title_part">Info for</string>
+    
+    <!-- Preference Strings -->
+    <string name="general_pref_label">General Settings</string>
+    <string name="pref_large_font_label">Use large fonts</string>
+    
+    <string name="logging_pref_label">Logging Settings</string>
+    <string name="pref_logging_enabled_label">Enabled Chat Logging</string>
+    <string name="pref_only_notify_nick">Only log when nick is said</string>
+    
+    <string name="connection_settings_label">Connection Settings</string>
+    <string name="pref_autoconnect_servers">AutoConnect Servers</string>
+</resources>
