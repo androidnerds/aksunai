@@ -33,6 +33,16 @@
 	</PreferenceCategory>
 	
 	<PreferenceCategory
+	   android:title="@string/notification_pref_label">
+	
+	   <CheckBoxPreference
+	       android:key="pref_notification_bar"
+	       android:title="@string/pref_notification_bar_label"
+	       android:summary="@string/pref_notification_bar_desc" />
+	       
+	</PreferenceCategory>
+	
+	<PreferenceCategory
 		android:title="@string/logging_pref_label">
 	
 		<CheckBoxPreference

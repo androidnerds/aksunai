@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import org.androidnerds.app.aksunai.data.ServerDbAdapter;
 import org.androidnerds.app.aksunai.net.ConnectionService;
+import org.androidnerds.app.aksunai.preferences.Preferences;
 import org.androidnerds.app.aksunai.ui.Chat;
 import org.androidnerds.app.aksunai.ui.ServerDetail;
 

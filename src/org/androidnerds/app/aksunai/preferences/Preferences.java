@@ -15,7 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.androidnerds.app.aksunai;
+package org.androidnerds.app.aksunai.preferences;
+
+import org.androidnerds.app.aksunai.R;
 
 import android.preference.Preference;
 import android.preference.PreferenceActivity;

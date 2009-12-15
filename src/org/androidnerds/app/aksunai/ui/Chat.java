@@ -456,7 +456,7 @@ public class Chat extends ListActivity {
             holder.setText(ChatMessageFormattedString(mSenders.elementAt(pos), mMessages.elementAt(pos)));
 
             Linkify.addLinks(holder, Linkify.ALL);
-            
+                        
             return convertView;
         }
 
