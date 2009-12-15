@@ -61,23 +61,14 @@
 		<CheckBoxPreference
 			android:key="pref_logging_key"
 			android:title="@string/pref_logging_enabled_label"
+			android:summary="@string/pref_logging_enabled_desc"
 			android:defaultValue="false" />
 			
 		<CheckBoxPreference
 			android:key="pref_log_only_nick"
 			android:title="@string/pref_only_notify_nick"
+			android:summary="@string/pref_only_notify_nick_desc"
 			android:defaultValue="false" />
 	</PreferenceCategory>
-	
-	<!-- Add the server settings here. -->
-	
-	<PreferenceCategory
-		android:title="@string/connection_settings_label">
-		
-		<CheckBoxPreference
-			android:key="pref_autoconnect"
-			android:title="@string/pref_autoconnect_servers"
-			android:defaultValue="false" />
-			
-	</PreferenceCategory>
+
 </PreferenceScreen>

@@ -23,15 +23,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.Hashtable;
 import java.util.Vector;
 
 public class ServerDbAdapter extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "servers.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
     private static final String DB_TABLE = "server_list";
 
-    private static final String DB_CREATE = "create table server_list (_id INTEGER PRIMARY KEY, title TEXT NOT NULL, address TEXT NOT NULL, username TEXT NOT NULL, nick TEXT NOT NULL, password TEXT, port TEXT, real_name TEXT);";
+    private static final String DB_CREATE = "create table server_list (_id INTEGER PRIMARY KEY, title TEXT NOT NULL, address TEXT NOT NULL, username TEXT NOT NULL, nick TEXT NOT NULL, password TEXT, port TEXT, real_name TEXT, autojoin TEXT, autoconnect INTEGER);";
 
     private SQLiteDatabase mDb;
     private Cursor mCur;
@@ -54,6 +55,10 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE server_list ADD COLUMN port TEXT;");
             db.execSQL("ALTER TABLE server_list ADD COLUMN real_name TEXT;");
             break;
+        case 3:
+        	db.execSQL("ALTER TABLE server_list ADD COLUMN autojoin TEXT;");
+        	db.execSQL("ALTER TABLE server_list ADD COLUMN autoconnect INTEGER;");
+        	break;
         default:
             db.execSQL("DROP TABLE IF EXISTS server_list");
             onCreate(db);
@@ -61,7 +66,7 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         }
     }
 
-    public long addServer(String title, String address, String username, String nick, String password, String port, String realName) {
+    public long addServer(String title, String address, String username, String nick, String password, String port, String realName, String autoJoin, int autoConnect) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -72,7 +77,8 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         values.put("password", password);
         values.put("port", port);
         values.put("real_name", realName);
-
+        values.put("autojoin", autoJoin);
+        values.put("autoconnect", autoConnect);
         long id = db.insert(DB_TABLE, null, values);
 
         db.close();
@@ -88,7 +94,7 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         return result;
     }
 
-    public int updateServer(int id, String title, String address, String username, String nick, String password, String port, String realName) {
+    public int updateServer(int id, String title, String address, String username, String nick, String password, String port, String realName, String autoJoin, int autoConnect) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -99,7 +105,9 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         values.put("password", password);
         values.put("port", port);
         values.put("real_name", realName);
-
+        values.put("autojoin", autoJoin);
+        values.put("autoconnect", autoConnect);
+        
         int result = db.update(DB_TABLE, values, "_id = ?", new String[] { String.valueOf(id) });
 
         db.close();
@@ -154,6 +162,22 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         return addresses;
     }
 
+    public Hashtable<Long, String> getAutoConnectServers() {
+    	SQLiteDatabase db = getReadableDatabase();
+    	Hashtable<Long, String> servers = new Hashtable<Long, String>();
+    	
+    	Cursor c = db.query(DB_TABLE, null, null, null, null, null, null);
+    	
+    	while (c.moveToNext()) {
+    		servers.put(new Long(c.getLong(8)), c.getString(1));
+    	}
+    	
+    	c.close();
+    	db.close();
+    	
+    	return servers;
+    }
+    
     public Cursor getItem(long id) {
         mDb = getReadableDatabase();
 

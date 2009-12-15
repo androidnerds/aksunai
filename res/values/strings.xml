@@ -38,6 +38,8 @@
     <string name="password_label">Password</string>
     <string name="port_label">Port</string>
     <string name="real_name_label">Real Name</string>
+    <string name="autojoin_label">Channels to automatically join</string>
+    <string name="autoconnect_label">Auto connect to this server</string>
     <string name="ui_getstarted">Type here and press enter to start chatting!</string>
     <string name="empty_chat_list">No Active Chats.</string>
     <string name="connecting">Connecting...</string>
@@ -93,9 +95,9 @@
     <string name="pref_notification_vibrate_desc">Also vibrate when message received.</string>
     
     <string name="logging_pref_label">Logging Settings</string>
-    <string name="pref_logging_enabled_label">Enabled Chat Logging</string>
-    <string name="pref_only_notify_nick">Only log when nick is said</string>
-    
-    <string name="connection_settings_label">Connection Settings</string>
-    <string name="pref_autoconnect_servers">AutoConnect Servers</string>
+    <string name="pref_logging_enabled_label">Enabled Logging</string>
+    <string name="pref_logging_enabled_desc">Log chat messages to the sdcard</string>
+    <string name="pref_only_notify_nick">Log nick only</string>
+    <string name="pref_only_notify_nick_desc">Only log when nickname is said</string>
+
 </resources>
