@@ -125,8 +125,11 @@ public class Chat extends ListActivity {
         Button btnSend = (Button)findViewById(R.id.btnSend);
         btnSend.setOnClickListener(mClickListener);
 
-        getListView().setOnTouchListener(mScreenTouch);
-
+        //getListView().setOnTouchListener(mScreenTouch);
+        
+        View v = (View) findViewById(R.id.chat_root_layout);
+        v.setOnTouchListener(mScreenTouch);
+        
         mGestureDetector = new GestureDetector(this, mGestureListener);
         mGestureDetector.toString();
 
