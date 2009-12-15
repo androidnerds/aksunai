@@ -17,6 +17,15 @@
  */
 package org.androidnerds.app.aksunai.preferences;
 
-public class AkRingtonePrerfence {
+import android.content.Context;
+import android.preference.RingtonePreference;
+import android.util.AttributeSet;
 
+public class AkRingtonePreference extends RingtonePreference {
+
+	private long mProviderId;
+	
+	public AkRingtonePreference(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 }
