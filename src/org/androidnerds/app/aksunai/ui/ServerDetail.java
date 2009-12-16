@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -40,7 +41,9 @@ public class ServerDetail extends Activity {
     private EditText mPassword;
     private EditText mPort;
     private EditText mRealName;
-
+    private EditText mAutojoin;
+    private CheckBox mAutoconnect;
+    
     @Override
     public void onCreate(Bundle appState) {
         super.onCreate(appState);
@@ -91,7 +94,9 @@ public class ServerDetail extends Activity {
         mPassword = (EditText) findViewById(R.id.detail_password);
         mPort = (EditText) findViewById(R.id.detail_port);
         mRealName = (EditText) findViewById(R.id.detail_real_name);
-
+        mAutojoin = (EditText) findViewById(R.id.detail_autojoin);
+        mAutoconnect = (CheckBox) findViewById(R.id.detail_autoconnect);
+        
         ServerDbAdapter db = new ServerDbAdapter(this);
         Cursor c = db.getItem(id.longValue());
 
@@ -103,6 +108,15 @@ public class ServerDetail extends Activity {
             mPassword.setText(c.getString(5));
             mPort.setText(c.getString(6));
             mRealName.setText(c.getString(7));
+            if (c.getString(8) != null) {
+            	mAutojoin.setText(c.getString(8));
+            }
+            
+            if (c.getInt(9) == 1) {
+            	mAutoconnect.setChecked(true);
+            } else {
+            	mAutoconnect.setChecked(false);
+            }
         }
 
         db.release();
@@ -116,7 +130,9 @@ public class ServerDetail extends Activity {
         mPassword = (EditText) findViewById(R.id.detail_password);
         mPort = (EditText) findViewById(R.id.detail_port);
         mRealName = (EditText) findViewById(R.id.detail_real_name);
-
+        mAutojoin = (EditText) findViewById(R.id.detail_autojoin);
+        mAutoconnect = (CheckBox) findViewById(R.id.detail_autoconnect);
+        
         if (mTitle.getText().toString().equals("") || mAddress.getText().toString().equals("") || mUsername.getText().toString().equals("") || mNickname.getText().toString().equals("")) {
             Toast.makeText(this, getString(R.string.required_fields), Toast.LENGTH_LONG).show();
             return false;
@@ -130,9 +146,15 @@ public class ServerDetail extends Activity {
             return;
         }
 
+        int connect = 0;
+        
+        if (mAutoconnect.isChecked()) {
+        	connect = 1;
+        }
+        
         ServerDbAdapter db = new ServerDbAdapter(this);
 
-        long id = db.addServer(mTitle.getText().toString(), mAddress.getText().toString(), mUsername.getText().toString(), mNickname.getText().toString(), mPassword.getText().toString(), mPort.getText().toString(), mRealName.getText().toString());
+        long id = db.addServer(mTitle.getText().toString(), mAddress.getText().toString(), mUsername.getText().toString(), mNickname.getText().toString(), mPassword.getText().toString(), mPort.getText().toString(), mRealName.getText().toString(), mAutojoin.getText().toString(), connect);
 
         db.close();
 
@@ -148,9 +170,15 @@ public class ServerDetail extends Activity {
             return;
         }
 
+        int connect = 0;
+        
+        if (mAutoconnect.isChecked()) {
+        	connect = 1;
+        }
+        
         ServerDbAdapter db = new ServerDbAdapter(this);
 
-        int result = db.updateServer(mId.intValue(), mTitle.getText().toString(), mAddress.getText().toString(), mUsername.getText().toString(), mNickname.getText().toString(), mPassword.getText().toString(), mPort.getText().toString(), mRealName.getText().toString());
+        int result = db.updateServer(mId.intValue(), mTitle.getText().toString(), mAddress.getText().toString(), mUsername.getText().toString(), mNickname.getText().toString(), mPassword.getText().toString(), mPort.getText().toString(), mRealName.getText().toString(), mAutojoin.getText().toString(), connect);
 
         db.close();
 

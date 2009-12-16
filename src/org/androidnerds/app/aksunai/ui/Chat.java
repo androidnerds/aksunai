@@ -504,7 +504,7 @@ public class Chat extends ListActivity {
                 /* PART or JOIN message */
                 formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("join")), 0, chatMessage.length(), 0);
                 formattedMessage.setSpan(new StyleSpan(Typeface.ITALIC), 0, chatMessage.length(), 0);
-            } else if (sender.equals("me")) {
+            } else if (sender.equals(mServer.mNick)) {
                 /* own message */
                 formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("ownmsg")), 0, chatMessage.length(), 0);
             } else if (message.toLowerCase().contains(mNick.toLowerCase())) { // case insensitive check
