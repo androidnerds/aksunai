@@ -304,7 +304,7 @@ public class Server {
                 writer.flush();
 
                 Channel chan = channels.get(activeChannel.name);
-                chan.conversation.add(mCtx.getString(R.string.me) + " " + msg);
+                chan.conversation.add(mNick + " " + msg);
 
                 if (activeChannel.name.equals(activeChannel.name) && ConnectionService.STATE_CHAT_WINDOW == Chat.STATE_WINDOW_OPEN) {
                     Message.obtain(mHandler, Server.MSG_UPDATE_CHANNEL, "me").sendToTarget();
