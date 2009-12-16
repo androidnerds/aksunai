@@ -42,7 +42,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.androidnerds.app.aksunai.MyConfig;
+import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.net.ConnectionService;
 import org.androidnerds.app.aksunai.net.Server;
@@ -113,7 +113,7 @@ public class UserList extends ListActivity {
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "Watching text...");
+            if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Watching text...");
             mAdapter.getFilter().filter(s);
             mAdapter.notifyDataSetChanged();
         }
@@ -202,7 +202,7 @@ public class UserList extends ListActivity {
         private class ArrayFilter extends Filter {
             @Override
             protected FilterResults performFiltering(CharSequence prefix) {
-                if (MyConfig.DEBUG) Log.d("Aksunai", "Are we performing filtering yet?");
+                if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Are we performing filtering yet?");
                 FilterResults results = new FilterResults();
 
                 if (mObjects == null) {

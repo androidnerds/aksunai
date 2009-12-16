@@ -28,7 +28,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.androidnerds.app.aksunai.MyConfig;
+import org.androidnerds.app.aksunai.util.AppConstants;
 
 public class ConnectionThread implements Runnable {
 
@@ -51,7 +51,7 @@ public class ConnectionThread implements Runnable {
         mServer = server;
         mPassword = password;
 
-        if (MyConfig.DEBUG) Log.d("Aksunai", "Creating connection thread to " + mURL + ":" + port);
+        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Creating connection thread to " + mURL + ":" + port);
 
         if (realName == null || realName.equals("")) {
             mRealName = "Aksunai Android Client";
@@ -71,7 +71,7 @@ public class ConnectionThread implements Runnable {
             mServer.state = Server.STATE_DISCONNECTED;
             requestKill();
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught on ConnectionThread disconnect: (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught on ConnectionThread disconnect: (Server) " + mServer + ", (Exception) " + e.toString());
         }
     }
 
@@ -86,12 +86,12 @@ public class ConnectionThread implements Runnable {
     //TODO: figure out the best way to terminate the process on the user side for the connection exceptions.
     public void run() {
         try {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "Connecting to... " + mURL + ":" + mPort);
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Connecting to... " + mURL + ":" + mPort);
             mSock = new Socket(mURL, mPort);
         } catch (UnknownHostException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "UnknownHostException caught, terminating connection process");
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "UnknownHostException caught, terminating connection process");
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught on socket creation. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught on socket creation. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
         mServer.state = Server.STATE_CONNECTING;
@@ -100,7 +100,7 @@ public class ConnectionThread implements Runnable {
             mServer.writer = new BufferedWriter(new OutputStreamWriter(mSock.getOutputStream()));
             mServer.reader = new BufferedReader(new InputStreamReader(mSock.getInputStream()));
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught grabbing input/output streams. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught grabbing input/output streams. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
         try {
@@ -108,7 +108,7 @@ public class ConnectionThread implements Runnable {
             mServer.writer.write("USER " + mUser + " 8 * :" + mRealName + "\r\n");
             mServer.writer.flush();
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught sending login information. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught sending login information. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
         String line = null;
@@ -116,7 +116,7 @@ public class ConnectionThread implements Runnable {
         try {
             while ((line = mServer.reader.readLine()) != null) {
             	
-                if (MyConfig.DEBUG) Log.d("Aksunai", "Server Message: " + line);
+                if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Server Message: " + line);
 
                 if (line.indexOf("001") >= 0) {
                     mServer.state = Server.STATE_CONNECTED;
@@ -130,7 +130,7 @@ public class ConnectionThread implements Runnable {
                     break;
                 } else if (line.indexOf("433") >= 0) {
                     //mServer.state = Server.STATE_NICK_IN_USE;
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "NICK_IN_USE raised.");
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "NICK_IN_USE raised.");
 
                     mServer.writer.write("NICK " + mNick + "_\r\n");
                     mServer.writer.write("USER " + mUser + " 8 * :" + mRealName + "\r\n");
@@ -143,7 +143,7 @@ public class ConnectionThread implements Runnable {
                 } else if (line.indexOf("432") >= 0) {
                     //mServer.state = Server.STATE_NICK_BAD;
 
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "Critical Error: STATE_NICK_BAD");
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Critical Error: STATE_NICK_BAD");
 
                     //there is a system error with the user's nick. notify them.
                     if (mServer.mHandler != null) {
@@ -161,7 +161,7 @@ public class ConnectionThread implements Runnable {
                 }
             }
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught receiving login feedback. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught receiving login feedback. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
         //TODO: add in feature for autojoining channels.
@@ -173,10 +173,10 @@ public class ConnectionThread implements Runnable {
 
             //mServer.state = Server.STATE_READY;
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught identifying nick. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught identifying nick. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
-        if (MyConfig.DEBUG) Log.d("Aksunai", "Preparing to listen for server messages.");
+        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Preparing to listen for server messages.");
 
         //watch for server messages.
         try {
@@ -191,7 +191,7 @@ public class ConnectionThread implements Runnable {
                 }
             }
         } catch (IOException e) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught handling messages. (Server) " + mServer + ", (Exception) " + e.toString());
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught handling messages. (Server) " + mServer + ", (Exception) " + e.toString());
         }
         
         return;

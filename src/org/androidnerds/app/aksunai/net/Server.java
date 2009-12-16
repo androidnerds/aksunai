@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.androidnerds.app.aksunai.MyConfig;
+import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.data.ServerDbAdapter;
 import org.androidnerds.app.aksunai.ui.Chat;
@@ -232,7 +232,7 @@ public class Server {
                     writer.write(tmp);
                     writer.flush();
                 } catch (IOException e) {
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught sending action message to server.");
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught sending action message to server.");
                 }
             } else if (msg.startsWith("/close")) {
                 if (activeChannel.type == Channel.TYPE.SERVER) {
@@ -248,7 +248,7 @@ public class Server {
 
                         partChannel(activeChannel.name);
                     } catch (IOException e) {
-                        if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught while parting the channel " + activeChannel.name);
+                        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught while parting the channel " + activeChannel.name);
                     }
 
                     return;
@@ -263,7 +263,7 @@ public class Server {
                         joinChannel(msg.substring(5).trim());
                     }
                 } catch (IOException e) {
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught while joining the channel " + activeChannel.name);
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught while joining the channel " + activeChannel.name);
                 }
             } else if (msg.startsWith("/whois")) {
                 try {
@@ -271,7 +271,7 @@ public class Server {
                     writer.write(tmp);
                     writer.flush();
                 } catch (IOException e) {
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught while retreiving whois for " + msg.substring(6));
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught while retreiving whois for " + msg.substring(6));
                 }
             } else if (msg.startsWith("/quit")) {
                 try {
@@ -279,7 +279,7 @@ public class Server {
                     writer.write(tmp);
                     writer.flush();
                 } catch (IOException e) {
-                    if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught while quitting the server: " + mName);
+                    if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught while quitting the server: " + mName);
                 }
             } else {
                 if (msg.indexOf(" ") == -1) {
@@ -310,14 +310,14 @@ public class Server {
                     Message.obtain(mHandler, Server.MSG_UPDATE_CHANNEL, "me").sendToTarget();
                 }
             } catch (IOException e) {
-                if (MyConfig.DEBUG) Log.d("Aksunai", "IOException caught while sending message to channel " + activeChannel.name);
+                if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught while sending message to channel " + activeChannel.name);
             }
         }
     }
 
     /* This method parses the irc messages from the server. */
     public void getLine(String line) {
-        if (MyConfig.DEBUG) Log.d("Aksunai", "Message: " + line);
+        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Message: " + line);
 
         String[] splittedMsg;
 
@@ -360,7 +360,7 @@ public class Server {
 
         if (command.equals("001")) {
             //connection notification.
-            if (MyConfig.DEBUG) Log.d("Aksunai", "Connected notification received.");
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Connected notification received.");
             Message.obtain(mHandler, Server.STATE_CONNECTED, "connected").sendToTarget();
         } else if (command.equals("353")) {
             int loc = line.indexOf(line.split(" ")[5]);
@@ -504,7 +504,7 @@ public class Server {
                 Channel chan = channels.get(room);
                 chan.conversation.add(nick + " PART " + nick + "has left the room (" + msg +")");
 
-                if (MyConfig.DEBUG) Log.d("Aksunai", nick + " PART " + nick + "has left the room (" + msg +")");
+                if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, nick + " PART " + nick + "has left the room (" + msg +")");
                 chan.users.remove(nick);
 
                 if (activeChannel.name.equals(room) && ConnectionService.STATE_CHAT_WINDOW == Chat.STATE_WINDOW_OPEN) {

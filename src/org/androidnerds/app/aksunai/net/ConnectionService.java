@@ -31,7 +31,7 @@ import android.util.Log;
 
 import java.util.Hashtable;
 
-import org.androidnerds.app.aksunai.MyConfig;
+import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.ui.Chat;
 
 /* Service only needs to be running if a connection is open.
@@ -61,7 +61,7 @@ public class ConnectionService extends Service {
         IS_RUNNING = true;
         ConnectionService.STATE_CHAT_WINDOW = Chat.STATE_WINDOW_CLOSED;
 
-        if (MyConfig.DEBUG) Log.d("Aksunai", "IS_RUNNING should now be set to true");
+        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IS_RUNNING should now be set to true");
 
         Bundle extras = intent.getExtras();
 

@@ -18,6 +18,10 @@
 package org.androidnerds.app.aksunai.util;
 
 public class AppConstants {
+    public final static boolean DEBUG = true;
 	public static final String CHAT_TAG = "Aksunai.Chat";
 	public static final String IRC_TAG = "Aksunai.IRC";
+	public static final String NET_TAG = "Aksunai.Net";
+	public static final String DATA_TAG = "Aksunai.Data";
+	public static final String UI_TAG = "Aksunai.Chat";
 }

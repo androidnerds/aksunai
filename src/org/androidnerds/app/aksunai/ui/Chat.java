@@ -54,7 +54,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.androidnerds.app.aksunai.MyConfig;
+import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.net.Channel;
 import org.androidnerds.app.aksunai.net.ConnectionService;
@@ -232,7 +232,7 @@ public class Chat extends ListActivity {
             mServer.sendMessage("/whois " + mAdapter.mSenders.get(info.position));
         }
 
-        if (MyConfig.DEBUG) Log.d("Aksunai", "The sender is..." + mAdapter.mSenders.get(info.position));
+        if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "The sender is..." + mAdapter.mSenders.get(info.position));
         return false;
     }
 
@@ -312,15 +312,15 @@ public class Chat extends ListActivity {
         //move to the next channel.
         boolean grabNext = false;
         for (Channel c : mServer.channels.values()) {
-            if (MyConfig.DEBUG) Log.d("Aksunai", "grabNext is: " + grabNext);
+            if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "grabNext is: " + grabNext);
             if (grabNext) {
                 mServer.activeChannel = c;
-                if (MyConfig.DEBUG) Log.d("Aksunai", "Setting up next channel");
+                if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Setting up next channel");
                 setupChannel();
                 break;
             }
 
-            if (MyConfig.DEBUG) Log.d("Aksunai", "Channel: " + c.name + " and activeChannel: " + mServer.activeChannel.name);
+            if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Channel: " + c.name + " and activeChannel: " + mServer.activeChannel.name);
             if (c.name.equals(mServer.activeChannel.name)) {
                 grabNext = true;
             }
@@ -338,7 +338,7 @@ public class Chat extends ListActivity {
             }
 
             if (prev != null) {
-                if (MyConfig.DEBUG) Log.d("Aksunai", "grabPrevious is: " + grabPrevious + " and prev: " + prev.name);
+                if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "grabPrevious is: " + grabPrevious + " and prev: " + prev.name);
             }
 
             if (c.name.equals(mServer.activeChannel.name)) {
@@ -347,12 +347,12 @@ public class Chat extends ListActivity {
 
             if (grabPrevious && prev != null) {
                 mServer.activeChannel = prev;
-                if (MyConfig.DEBUG) Log.d("Aksunai", "Setting up last channel");
+                if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Setting up last channel");
                 setupChannel();
                 break;
             }
 
-            if (MyConfig.DEBUG) Log.d("Aksunai", "Channel: " + c.name + " and activeChannel: " + mServer.activeChannel.name);
+            if (AppConstants.DEBUG) Log.d(AppConstants.UI_TAG, "Channel: " + c.name + " and activeChannel: " + mServer.activeChannel.name);
 
             prev = c;
         }
