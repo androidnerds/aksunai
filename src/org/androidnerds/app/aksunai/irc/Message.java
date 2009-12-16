@@ -17,7 +17,7 @@
  */
 package org.androidnerds.app.aksunai.irc;
 
-import android.util.Log;
+//import android.util.Log;
 import java.util.Date;
 
 /**
@@ -26,7 +26,7 @@ import java.util.Date;
  *     <li>sender: may be empty if it's a server message</li>
  *     <li>command: a {@link org.androidnerds.app.aksunai.irc.Command}</li>
  *     <li>parameters: the receiver, the mode, the channel...</li>
- *     <li>data: text message that appears after a ":", usually a the content of a privmsg, notice, part message, topic...</li>
+ *     <li>text: text message that appears after a ":", usually a the content of a privmsg, notice, part message, topic...</li>
  * </ul>
  *
  * Messages are instanciated by a {@link org.androidnerds.app.aksunai.Server}.
@@ -34,16 +34,62 @@ import java.util.Date;
 public class Message {
     public Command mCommand;
     public String mSender;
-    public String mParameters;
-    public String mData;
+    public String[] mParameters;
+    public String mText;
     public long mTimestamp;
 
     /**
      * Class constructor. Parses a raw server message.
      */
-    Message(String line) {
-        // TODO: regex to split the line nicely into tokens
-        
+    public Message(String line) {
         this.mTimestamp = new Date().getTime();
+
+        int textPos = line.indexOf(" :"); /* is there a text message? */
+        if (textPos != -1) {
+            this.mText = line.substring(textPos + 2);
+            line = line.substring(0, textPos);
+        }
+
+        if (!line.startsWith(":")) { /* sent by the server we're connected to: <command> [parameters]*/
+            String[] parts = line.split(" ", 2);
+
+            this.mCommand = getCommand(parts[0]);
+            if (parts.length == 2) {
+                this.mParameters = parts[1].split(" ");
+            }
+        } else {
+            line = line.substring(1); /* strip the first ":" */
+            String[] parts = line.split(" ", 3);
+            
+            this.mSender = parts[0];
+            if (parts.length >= 2) {
+                this.mCommand = getCommand(parts[1]);
+            }
+            if (parts.length > 2) {
+                this.mParameters = parts[2].split(" ");
+            }
+        }
+    }
+
+    /**
+     * returns the command. If the command is numeric, it's a server initiated message, and the command
+     * will be NONE.
+     *
+     * @param line the string to get the command from
+     * @return the command
+     */
+    public static Command getCommand(String str) {
+        try {
+            Integer.parseInt(str); /* if it's a numeric command, it's a server message */
+            return Command.NONE;
+        } catch (NumberFormatException e) {}
+
+        for (Command c: Command.values()) {
+            if (c.equalsIgnoreCase(str)) {
+                return c;
+            }
+        }
+
+        return Command.UNKNOWN;
     }
 }
