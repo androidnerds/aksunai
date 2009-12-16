@@ -130,7 +130,9 @@ public class ServerDetail extends Activity {
         mPassword = (EditText) findViewById(R.id.detail_password);
         mPort = (EditText) findViewById(R.id.detail_port);
         mRealName = (EditText) findViewById(R.id.detail_real_name);
-
+        mAutojoin = (EditText) findViewById(R.id.detail_autojoin);
+        mAutoconnect = (CheckBox) findViewById(R.id.detail_autoconnect);
+        
         if (mTitle.getText().toString().equals("") || mAddress.getText().toString().equals("") || mUsername.getText().toString().equals("") || mNickname.getText().toString().equals("")) {
             Toast.makeText(this, getString(R.string.required_fields), Toast.LENGTH_LONG).show();
             return false;
