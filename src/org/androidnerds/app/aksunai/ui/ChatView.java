@@ -21,14 +21,13 @@ import android.content.Context;
 import android.view.View;
 
 import org.androidnerds.app.aksunai.R;
+import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.irc.Server;
 
 public class ChatView extends View {
 
-	public ChatView(Context context) {
+	public ChatView(Context context, Channel channel, Server server) {
 		super(context);
 	}
 	
-	public int getId() {
-		return R.layout.chat;
-	}
 }

@@ -28,6 +28,8 @@ import android.util.Log;
 import android.widget.ViewFlipper;
 
 import org.androidnerds.app.aksunai.R;
+import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.service.ChatManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -67,6 +69,17 @@ public class ChatActivity extends Activity {
 			}
 			
 			mManager.mConnections.size();
+			
+			//we need to setup a view for each channel/pm in each server.
+			for (Server s : mManager.mConnections) {
+				//create a view for s.
+				for (Channel c : s.mChannels) {
+					ChatView chat = new ChatView(ChatActivity.this, c, s);
+					chat.setId(R.id.chat_flipper);
+					
+					mFlipper.addView(chat);
+				}
+			}
 		}
 		
 		public void onServiceDisconnected(ComponentName name) {
