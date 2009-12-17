@@ -34,6 +34,7 @@ public class Private extends MessageList {
      */
     public Private(String title, String receiver) {
         super(title);
+        this.mType = Type.PRIVATE;
         this.mReceiver = receiver;
     }
 }

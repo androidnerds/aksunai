@@ -35,6 +35,7 @@ public class Notice extends MessageList {
      */
     public Notice(String title, String sender, String receiver) {
         super(title);
+        this.mType = Type.NOTICE;
         this.mSender = sender;
         this.mReceiver = receiver;
     }
