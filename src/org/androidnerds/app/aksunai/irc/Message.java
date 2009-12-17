@@ -17,7 +17,7 @@
  */
 package org.androidnerds.app.aksunai.irc;
 
-//import android.util.Log;
+import android.util.Log;
 import java.util.Date;
 
 /**
@@ -32,8 +32,8 @@ import java.util.Date;
  * Messages are instanciated by a {@link org.androidnerds.app.aksunai.Server}.
  */
 public class Message {
-    public Command mCommand;
     public String mSender;
+    public Command mCommand;
     public String[] mParameters;
     public String mText;
     public long mTimestamp;
@@ -92,4 +92,19 @@ public class Message {
 
         return Command.UNKNOWN;
     }
+
+    /**
+     * returns the string representation of this message.
+     *
+     * @return the string representation of this message.
+     */
+    public String toString() {
+        String parameters = "";
+        for (String param: mParameters) {
+            parameters += param + " ";
+        }
+        parameters = parameters.trim();
+        return "timestamp=" + mTimestamp + " sender=" + mSender + " command=" + mCommand + " parameters=[" + parameters + "] text=" + mText;
+    }
 }
+

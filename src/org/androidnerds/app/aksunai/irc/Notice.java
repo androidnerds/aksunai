@@ -20,9 +20,10 @@ package org.androidnerds.app.aksunai.irc;
 import android.util.Log;
 
 /**
- * Private holds the list of private messages, and to who they are addressed.
+ * Notice holds the list of notices, from who and to who they are addressed.
  */
-public class Private extends MessageList {
+public class Notice extends MessageList {
+    public String mSender;
     public String mReceiver;
 
     /**
@@ -30,8 +31,9 @@ public class Private extends MessageList {
      *
      * @param title a String, used as window title by the ChatManager
      */
-    public Private(String title, String receiver) {
+    public Notice(String title, String sender, String receiver) {
         super(title);
+        this.mSender = sender;
         this.mReceiver = receiver;
     }
 }

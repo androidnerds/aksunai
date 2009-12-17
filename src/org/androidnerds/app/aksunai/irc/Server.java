@@ -18,6 +18,11 @@
 package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
  * Server is the holder for everything related to the server, its messages, notices, channels, private messages,
@@ -27,11 +32,15 @@ import android.util.Log;
  * <ul>
  *     <li>receiveMessage: takes a raw string from the ConnectionManager</li>
  *     <li>sendMessage: sends a raw string to the ConnectionManager</li>
- *     <li>updateUI: notify the ChatManager that some messages were received, and for wich MessageList instance</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server.MessageListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setOnNewMessageListener}</li>
  * </ul>
  */
 public class Server extends MessageList {
     public String mNick;
+    private List<MessageListener> mListeners;
+    public List<Channel> mChannels;
+    public List<Private> mPrivates;
+    public List<Notice> mNotices;
 
     /**
      * Class constructor.
@@ -40,7 +49,85 @@ public class Server extends MessageList {
      */
     public Server(String title) {
         super(title);
+        this.mListeners = Collections.synchronizedList(new ArrayList());
+        this.mChannels = Collections.synchronizedList(new ArrayList());
+        this.mPrivates = Collections.synchronizedList(new ArrayList());
+        this.mNotices = Collections.synchronizedList(new ArrayList());
+    }
+
+    /**
+     * Message Listener. Listeners must implement all four of the following methods:
+     * <ul>
+     *     <li>public void onNewServerMessage(Message message, Server messageList);</li>
+     *     <li>public void onNewChannelMessage(Message message, Channel messageList);</li>
+     *     <li>public void onNewPrivateMessage(Message message, Private messageList);</li>
+     *     <li>public void onNewNoticeMessage(Message message, Notice messageList);</li>
+     * </ul>
+     */
+    public interface MessageListener {
+        public void onNewServerMessage(Message message, Server messageList);
+        public void onNewChannelMessage(Message message, Channel messageList);
+        public void onNewPrivateMessage(Message message, Private messageList);
+        public void onNewNoticeMessage(Message message, Notice messageList);
+    }
+
+    /**
+     * registers as a message listener.
+     */
+    public void setOnNewMessageListener(MessageListener ml) {
+        mListeners.add(ml);
+    }
+
+    /**
+     * notifies the listeners that a new server message is available.
+     *
+     * @param message the new {@link org.androidnerds.app.aksunai.irc.Message}
+     * @param messageList the {@link org.androidnerds.app.aksunai.irc.Server} holding this new message
+     */
+    public void notifyNewServerMessage(Message message, Server messageList) {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new server message: " + message);
+            ml.onNewServerMessage(message, messageList);
+        }
+    }
+
+    /**
+     * notifies the listeners that a new channel message is available.
+     *
+     * @param message the new {@link org.androidnerds.app.aksunai.irc.Message}
+     * @param messageList the {@link org.androidnerds.app.aksunai.irc.Channel} holding this new message
+     */
+    public void notifyNewChannelMessage(Message message, Channel messageList) {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new channel message: " + message);
+            ml.onNewChannelMessage(message, messageList);
+        }
+    }
+
+    /**
+     * notifies the listeners that a new private message is available.
+     *
+     * @param message the new {@link org.androidnerds.app.aksunai.irc.Message}
+     * @param messageList the {@link org.androidnerds.app.aksunai.irc.Private} holding this new message
+     */
+    public void notifyNewPrivateMessage(Message message, Private messageList) {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new private message: " + message);
+            ml.onNewPrivateMessage(message, messageList);
+        }
+    }
+
+    /**
+     * notifies the listeners that a new notice message is available.
+     *
+     * @param message the new {@link org.androidnerds.app.aksunai.irc.Message}
+     * @param messageList the {@link org.androidnerds.app.aksunai.irc.Notice} holding this new message
+     */
+    public void notifyNewNoticeMessage(Message message, Notice messageList) {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new notice message: " + message);
+            ml.onNewNoticeMessage(message, messageList);
+        }
     }
 }
-
 
