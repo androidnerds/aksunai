@@ -52,7 +52,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	private final IBinder mBinder = new ChatBinder();
 	private NotificationManager mNotificationManager;
 	protected SharedPreferences mPrefs;
-	private List<String> mConnections;
+	public List<Server> mConnections;
 	
 	@Override
 	public void onCreate() {
