@@ -31,11 +31,12 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * Server is the holder for everything related to the server, its messages, notices, channels, private messages,
  * nick name, username, real name...
  * <p>
- * It has three input/output points:
+ * It has four input/output points:
  * <ul>
- *     <li>receiveMessage: takes a raw string from the ConnectionManager</li>
- *     <li>sendMessage: sends a raw string to the ConnectionManager</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server#receiveMessage}: takes a raw string from the ConnectionManager</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server#sendMessage}: sends a raw string to the ConnectionManager</li>
  *     <li>{@link org.androidnerds.app.aksunai.irc.Server.MessageListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setOnNewMessageListener}</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server#userMessage}: takes a user string, formats it, and sends it via sendMessage</li>
  * </ul>
  */
 public class Server extends MessageList {
@@ -61,8 +62,12 @@ public class Server extends MessageList {
     }
 
     /**
-     * Message Listener. Listeners must implement all four of the following methods:
+     * Message Listener. Listeners must implement all the following methods:
      * <ul>
+     *     <li>public void onNewServer(Server server);</li>
+     *     <li>public void onNewChannel(Channel channel);</li>
+     *     <li>public void onNewPrivate(Private private);</li>
+     *     <li>public void onNewNotice(Notice notice);</li>
      *     <li>public void onNewServerMessage(Message message, Server messageList);</li>
      *     <li>public void onNewChannelMessage(Message message, Channel messageList);</li>
      *     <li>public void onNewPrivateMessage(Message message, Private messageList);</li>
@@ -70,6 +75,10 @@ public class Server extends MessageList {
      * </ul>
      */
     public interface MessageListener {
+        public void onNewServer(Server server);
+        public void onNewChannel(Channel channel);
+        public void onNewPrivate(Private privmsg);
+        public void onNewChannel(Channel notice);
         public void onNewServerMessage(Message message, Server messageList);
         public void onNewChannelMessage(Message message, Channel messageList);
         public void onNewPrivateMessage(Message message, Private messageList);
@@ -152,6 +161,15 @@ public class Server extends MessageList {
      */
     public void sendMessage(String message) {
         mConnectionManager.sendMessage(this, message);
+    }
+
+    /**
+     * takes a string from the {@link org.androidnerds.app.aksunai.service.ChatManager} and formats it
+     * before sending it to the server through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}
+     */
+    public void userMessage(String message) {
+        // TODO: formatting
+        sendMessage(message);
     }
 }
 
