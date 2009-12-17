@@ -31,6 +31,12 @@ import android.util.Log;
 
 import java.util.List;
 
+import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.irc.Message;
+import org.androidnerds.app.aksunai.irc.Notice;
+import org.androidnerds.app.aksunai.irc.Private;
+import org.androidnerds.app.aksunai.irc.Server;
+import org.androidnerds.app.aksunai.irc.Server.MessageListener;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -41,7 +47,7 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * 
  * The ChatManager service is responsible for communicating the irc messages from the thread to the UI.
  */
-public class ChatManager extends Service implements OnSharedPreferenceChangeListener {
+public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListener {
 
 	private final IBinder mBinder = new ChatBinder();
 	private NotificationManager mNotificationManager;
@@ -116,5 +122,24 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
 		//we need to keep an eye on the preferences while connected.
 		mPrefs = preferences;
+	}
+	
+	/**
+	 * MessageListeners
+	 */
+	public void onNewServerMessage(Message message, Server messageList) {
+		
+	}
+	
+	public void onNewChannelMessage(Message message, Channel messageList) {
+		
+	}
+	
+	public void onNewPrivateMessage(Message message, Private messageList) {
+		
+	}
+	
+	public void onNewNoticeMessage(Message message, Notice messageList) {
+		
 	}
 }
