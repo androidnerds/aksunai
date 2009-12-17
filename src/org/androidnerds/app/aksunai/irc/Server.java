@@ -18,10 +18,13 @@
 package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
+import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
@@ -36,23 +39,25 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * </ul>
  */
 public class Server extends MessageList {
+    private ConnectionManager mConnectionManager;
     public String mNick;
     private List<MessageListener> mListeners;
-    public List<Channel> mChannels;
-    public List<Private> mPrivates;
-    public List<Notice> mNotices;
+    public Map<String, Channel> mChannels;
+    public Map<String, Private> mPrivates;
+    public Map<String, Notice> mNotices;
 
     /**
      * Class constructor.
      *
      * @param title a String, used as window title by the ChatManager
      */
-    public Server(String title) {
+    public Server(ConnectionManager cm, String title) {
         super(title);
-        this.mListeners = Collections.synchronizedList(new ArrayList());
-        this.mChannels = Collections.synchronizedList(new ArrayList());
-        this.mPrivates = Collections.synchronizedList(new ArrayList());
-        this.mNotices = Collections.synchronizedList(new ArrayList());
+        this.mConnectionManager = cm;
+        this.mListeners = Collections.synchronizedList(new ArrayList<MessageListener>());
+        this.mChannels = Collections.synchronizedMap(new HashMap<String, Channel>());
+        this.mPrivates = Collections.synchronizedMap(new HashMap<String, Private>());
+        this.mNotices = Collections.synchronizedMap(new HashMap<String, Notice>());
     }
 
     /**
@@ -128,6 +133,25 @@ public class Server extends MessageList {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new notice message: " + message);
             ml.onNewNoticeMessage(message, messageList);
         }
+    }
+
+    /**
+     * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionManager}, formats it,
+     * and adds it to the appropriate message list.
+     *
+     * @param message a String containg the raw message received from the connection
+     */
+    public void receiveMessage(String message) {
+    }
+
+    /**
+     * sends a formatted message, by {@link org.androidnerds.app.aksunai.irc.UserMessage},
+     * to the server through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}.
+     *
+     * @param message a string formatted by {@link org.androidnerds.app.aksunai.irc.UserMessage}
+     */
+    public void sendMessage(String message) {
+        mConnectionManager.sendMessage(this, message);
     }
 }
 

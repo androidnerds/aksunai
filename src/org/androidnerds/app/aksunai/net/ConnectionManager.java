@@ -15,32 +15,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.androidnerds.app.aksunai.irc;
+package org.androidnerds.app.aksunai.net;
 
 import android.util.Log;
 import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.HashMap;
 
+import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
- * Channel holds a topic, an alphabetically sorted user list, and a list of messages.
+ * ConnectionManager handles the network connections to the servers. It also holds a list of
+ * {@link org.androidnerds.app.aksunai.irc.Server} to which the messages from the servers will
+ * be sent, and from which the messages to the servers will be received.
  */
-public class Channel extends MessageList {
-    public String mTopic;
-    public SortedSet<String> mUsers;
+public class ConnectionManager {
+    private Map<String, Server> mServers;
 
     /**
-     * Class constructor.
-     *
-     * @param title a String, used as window title by the ChatManager
-     * @param topic a String, the topic and its setter
+     * takes a formatted string and writes it to the connection to the server wich corresponds to the
+     * {@link org.androidnerds.app.aksunai.irc.Server}
      */
-    public Channel(String title, String topic) {
-        super(title);
-        this.mTopic = topic;
-        this.mUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+    public void sendMessage(Server server, String message) {
     }
 }
 

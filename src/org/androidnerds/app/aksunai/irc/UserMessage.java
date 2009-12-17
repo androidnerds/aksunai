@@ -19,6 +19,8 @@ package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
 
+import org.androidnerds.app.aksunai.util.AppConstants;
+
 /**
  * UserMessage is used to format a command (and its parameters) nicely for a
  * {@link org.androidnerds.app.aksunai.irc.Server} to send to to the actual connected server

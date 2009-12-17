@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.androidnerds.app.aksunai.util.AppConstants;
+
 /**
  * MessageList is the base class for {@link org.androidnerds.app.aksunai.irc.Server},
  * {@link org.androidnerds.app.aksunai.irc.Channel} and {@link org.androidnerds.app.aksunai.irc.Private}.
