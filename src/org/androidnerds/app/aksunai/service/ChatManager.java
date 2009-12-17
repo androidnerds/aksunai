@@ -49,97 +49,96 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  */
 public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListener {
 
-	private final IBinder mBinder = new ChatBinder();
-	private NotificationManager mNotificationManager;
-	protected SharedPreferences mPrefs;
-	public List<Server> mConnections;
+    private final IBinder mBinder = new ChatBinder();
+    private NotificationManager mNotificationManager;
+    protected SharedPreferences mPrefs;
+    public List<Server> mConnections;
 	
-	@Override
-	public void onCreate() {
-		Log.i(AppConstants.CHAT_TAG, "Creating the chat service.");
+    @Override
+    public void onCreate() {
+	Log.i(AppConstants.CHAT_TAG, "Creating the chat service.");
 		
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mPrefs.registerOnSharedPreferenceChangeListener(this);
+	mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+	mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		//testing out this setting. it might not be needed.
-		setForeground(true);
-	}
+        //testing out this setting. it might not be needed.
+	setForeground(true);
+    }
 
-	@Override
-	public void onDestroy() {
-		
-	}
+    @Override
+    public void onDestroy() {
+       	
+    }
 
-	protected void stop() {
-		if (mConnections.isEmpty()) {
-			stopSelf();
-		}
+    protected void stop() {
+        if (mConnections.isEmpty()) {
+	    stopSelf();
 	}
+    }
 	
-	public void openServerConnection() {
+    public void openServerConnection() {
 		
-	}
+    }
 	
-	/**
-	 * This method sends a notification to the user if they have the preference set.
-	 */
-	public void sendNotification() {
-		if (!mPrefs.getBoolean(PreferenceConstants.NOTIFICATIONS, false)) {
-			return;
-		}
-		
-		
+    /**
+     * This method sends a notification to the user if they have the preference set.
+     */
+    public void sendNotification() {
+        if (!mPrefs.getBoolean(PreferenceConstants.NOTIFICATIONS, false)) {
+	    return;
 	}
+		
+    }
 	
-	@Override
-	public IBinder onBind(Intent intent) {
-		Log.i(AppConstants.CHAT_TAG, "Something is bound to the ChatManager");
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i(AppConstants.CHAT_TAG, "Something is bound to the ChatManager");
 		
-		//binded services don't stay running. let's make sure we do.
-		startService(new Intent(this, ChatManager.class));
+	//binded services don't stay running. let's make sure we do.
+	startService(new Intent(this, ChatManager.class));
 		
-		return mBinder;
-	}
+	return mBinder;
+    }
 	
-	@Override
-	public boolean onUnbind(Intent intent) {
+    @Override
+    public boolean onUnbind(Intent intent) {
+       	
+        if (mConnections.isEmpty()) {
+	    stop();
+	}
 		
-		if (mConnections.isEmpty()) {
-			stop();
-		}
+	return true;
+    }
+	
+    public class ChatBinder extends Binder {
+        public ChatManager getService() {
+	    return ChatManager.this;
+	}
+    }
+	
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
+        //we need to keep an eye on the preferences while connected.
+	mPrefs = preferences;
+    }
+	
+    /**
+     * MessageListeners
+     */
+    public void onNewServerMessage(Message message, Server messageList) {
 		
-		return true;
-	}
+    }
 	
-	public class ChatBinder extends Binder {
-		public ChatManager getService() {
-			return ChatManager.this;
-		}
-	}
-	
-	public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-		//we need to keep an eye on the preferences while connected.
-		mPrefs = preferences;
-	}
-	
-	/**
-	 * MessageListeners
-	 */
-	public void onNewServerMessage(Message message, Server messageList) {
+    public void onNewChannelMessage(Message message, Channel messageList) {
 		
-	}
+    }
 	
-	public void onNewChannelMessage(Message message, Channel messageList) {
+    public void onNewPrivateMessage(Message message, Private messageList) {
 		
-	}
+    }
 	
-	public void onNewPrivateMessage(Message message, Private messageList) {
-		
-	}
+    public void onNewNoticeMessage(Message message, Notice messageList) {
 	
-	public void onNewNoticeMessage(Message message, Notice messageList) {
-		
-	}
+    }
 }

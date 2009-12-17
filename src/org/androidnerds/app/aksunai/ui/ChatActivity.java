@@ -73,7 +73,7 @@ public class ChatActivity extends Activity {
 			//we need to setup a view for each channel/pm in each server.
 			for (Server s : mManager.mConnections) {
 				//create a view for s.
-				for (Channel c : s.mChannels) {
+				for (Channel c : s.mChannels.values()) {
 					ChatView chat = new ChatView(ChatActivity.this, c, s);
 					chat.setId(R.id.chat_flipper);
 					
