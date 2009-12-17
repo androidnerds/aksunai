@@ -31,7 +31,11 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * It holds the list of {@link org.androidnerds.app.aksunai.irc.Message} and a title (used as window title)
  */
 public class MessageList {
+    
+    public enum Type { SERVER, CHANNEL, PRIVATE, NOTICE }
+
     public String mTitle;
+    public Type mType;
     public List<Message> mMessages;
 
     /**
@@ -42,6 +46,10 @@ public class MessageList {
     public MessageList(String title) {
         this.mTitle = title;
         this.mMessages = Collections.synchronizedList(new ArrayList<Message>());
+    }
+
+    public String toString() {
+        return "MessageList type=" + mType + " title=" + mTitle;
     }
 }
 

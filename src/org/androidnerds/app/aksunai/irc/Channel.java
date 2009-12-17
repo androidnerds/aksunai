@@ -39,6 +39,7 @@ public class Channel extends MessageList {
      */
     public Channel(String title, String topic) {
         super(title);
+        this.mType = Type.CHANNEL;
         this.mTopic = topic;
         this.mUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
     }
