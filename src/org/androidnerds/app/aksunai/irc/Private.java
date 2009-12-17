@@ -19,6 +19,8 @@ package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
 
+import org.androidnerds.app.aksunai.util.AppConstants;
+
 /**
  * Private holds the list of private messages, and to who they are addressed.
  */

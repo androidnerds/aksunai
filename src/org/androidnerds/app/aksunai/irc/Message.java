@@ -20,6 +20,8 @@ package org.androidnerds.app.aksunai.irc;
 import android.util.Log;
 import java.util.Date;
 
+import org.androidnerds.app.aksunai.util.AppConstants;
+
 /**
  * Message is the basis of the IRC stack. It parses a message from the server (a line) into:
  * <ul>

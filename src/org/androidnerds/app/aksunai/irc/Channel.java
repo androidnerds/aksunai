@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.androidnerds.app.aksunai.util.AppConstants;
+
 /**
  * Channel holds a topic, an alphabetically sorted user list, and a list of messages.
  */
