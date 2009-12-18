@@ -87,7 +87,7 @@ public class Message {
         } catch (NumberFormatException e) {}
 
         for (Command c: Command.values()) {
-            if (c.equalsIgnoreCase(str)) {
+            if (c.startsWithIgnoreCase(str)) { /* using "startsWithIgnoreCase allows the command /j to be matched with /join */
                 return c;
             }
         }

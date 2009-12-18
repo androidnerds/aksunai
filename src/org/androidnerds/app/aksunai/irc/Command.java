@@ -108,6 +108,17 @@ public enum Command {
     }
 
     /**
+     * Returns true if the internal representation of this command starts with the given string.
+     * The check is case insensitive.
+     *
+     * @param command a string to be compared to
+     * @return true if the internal representation starts with the parameter, case insensitively
+     */
+    public boolean startsWithIgnoreCase(String command) {
+        return this.mStr.startsWith(command.toLowerCase());
+    }
+
+    /**
      * Returns the string representation of this command.
      *
      * @return the string representation of this command
