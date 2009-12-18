@@ -151,6 +151,7 @@ public class Server extends MessageList {
                 mMessageLists.put(msg.mText, (MessageList) new Channel(msg.mText));
                 notifyNewMessageList(mMessageLists.get(msg.mText));
             } else {
+                ((Channel) mMessageLists.get(msg.mText)).addUser(msg.mSender);
                 storeAndNotify(msg, mMessageLists.get(msg.mText));
             }
             break;
@@ -162,6 +163,9 @@ public class Server extends MessageList {
                     if ((mlist.mType == MessageList.Type.CHANNEL && ((Channel) mlist).mUsers.contains(msg.mSender)) || /* channels which have this user */
                         (mlist.mType == MessageList.Type.PRIVATE && mlist.mTitle.equals(msg.mSender))) { /* private message with this user */
 
+                        if (mlist.mType == MessageList.Type.CHANNEL) {
+                            ((Channel) mlist).removeUser(msg.mSender);
+                        }
                         storeAndNotify(msg, mlist);
                     }
                 }
@@ -172,7 +176,7 @@ public class Server extends MessageList {
                 notifyLeave(msg.mParameters[0]);
             } else {
                 Channel channel = (Channel) mMessageLists.get(msg.mParameters[0]);
-                channel.mUsers.remove(msg.mSender);
+                channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
         case PING:
