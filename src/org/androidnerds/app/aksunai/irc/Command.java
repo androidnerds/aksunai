@@ -26,8 +26,9 @@ package org.androidnerds.app.aksunai.irc;
  * method will return the actual command to send to the irc server.
  */
 public enum Command {
-    /* server initiated messages, no command */
-    NONE (""),
+    /* server initiated messages, no command, numeric */
+    _001 ("001"),
+    OTHER (""),
 
     /* connection registration */
     PASS ("pass"),

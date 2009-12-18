@@ -33,8 +33,6 @@ import java.util.List;
 
 import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Message;
-import org.androidnerds.app.aksunai.irc.Notice;
-import org.androidnerds.app.aksunai.irc.Private;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.irc.Server.MessageListener;
@@ -135,4 +133,10 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	public void onNewMessage(Message message, MessageList mlist) {
 		
 	}
+
+    public void onQuit() {
+    }
+
+    public void onLeave(String title) {
+    }
 }
