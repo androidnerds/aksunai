@@ -186,6 +186,14 @@ public class ServerDbAdapter extends SQLiteOpenHelper {
         return mCur;
     }
 
+    public Cursor getItem(String name) {
+    	mDb = getReadableDatabase();
+    	
+    	mCur = mDb.query(DB_TABLE, null, "title = ?", new String[] { name }, null, null, null);
+    	
+    	return mCur;
+    }
+    
     public void release() {
         mCur.close();
         mDb.close();

@@ -29,50 +29,25 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.androidnerds.app.aksunai.util.AppConstants;
+import org.androidnerds.app.aksunai.irc.Server;
 
 public class ConnectionThread implements Runnable {
 
     private Socket mSock;
-    private String mURL;
     private Server mServer;
-    private String mNick;
-    private String mUser;
-    private String mPassword;
-    private String mRealName;
-    private int mPort;
+    private BufferedWriter mWriter;
+    private BufferedReader mReader;
     private volatile boolean kill = false;
     
     public static final int IRC_PORT = 6667;
 
-    public ConnectionThread(String url, String nick, String user, String password, int port, String realName, Server server) {
-        mURL = url;
-        mNick = nick;
-        mUser = user;
-        mServer = server;
-        mPassword = password;
-
-        if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Creating connection thread to " + mURL + ":" + port);
-
-        if (realName == null || realName.equals("")) {
-            mRealName = "Aksunai Android Client";
-        } else {
-            mRealName = realName;
-        }
-
-        mPort = port;
-        if (mPort == 0) {
-            mPort = IRC_PORT;
-        }
+    public ConnectionThread(Server s) {
+        mServer = s;
+        
     }
 
     public void disconnect() {
-        try {
-            mSock.close();
-            mServer.state = Server.STATE_DISCONNECTED;
-            requestKill();
-        } catch (IOException e) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught on ConnectionThread disconnect: (Server) " + mServer + ", (Exception) " + e.toString());
-        }
+  
     }
 
     private synchronized void requestKill() {
@@ -86,27 +61,25 @@ public class ConnectionThread implements Runnable {
     //TODO: figure out the best way to terminate the process on the user side for the connection exceptions.
     public void run() {
         try {
-            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Connecting to... " + mURL + ":" + mPort);
-            mSock = new Socket(mURL, mPort);
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Connecting to... " + mServer.mUrl + ":" + mServer.mPort);
+            mSock = new Socket(mServer.mUrl, mServer.mPort);
         } catch (UnknownHostException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "UnknownHostException caught, terminating connection process");
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught on socket creation. (Server) " + mServer + ", (Exception) " + e.toString());
         }
-
-        mServer.state = Server.STATE_CONNECTING;
-
+        
         try {
-            mServer.writer = new BufferedWriter(new OutputStreamWriter(mSock.getOutputStream()));
-            mServer.reader = new BufferedReader(new InputStreamReader(mSock.getInputStream()));
+            mWriter = new BufferedWriter(new OutputStreamWriter(mSock.getOutputStream()));
+            mReader = new BufferedReader(new InputStreamReader(mSock.getInputStream()));
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught grabbing input/output streams. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
         try {
-            mServer.writer.write("NICK " + mNick + "\r\n");
-            mServer.writer.write("USER " + mUser + " 8 * :" + mRealName + "\r\n");
-            mServer.writer.flush();
+            mWriter.write("NICK " + mServer.mNick + "\r\n");
+            mWriter.write("USER " + mServer.mUser + " 8 * :" + mServer.mRealName + "\r\n");
+            mWriter.flush();
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught sending login information. (Server) " + mServer + ", (Exception) " + e.toString());
         }
