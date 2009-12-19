@@ -33,26 +33,18 @@ public class UserMessage {
      * @param message a String, written by the user, to be formatted to send to a server
      * @return the formatted string to send to the server
      */
-    static public String format(String message) {
-        Command command;
-        String parameters;
-        String text;
-
-        if (message.startsWith("/")) { /* user command */
-        } else { /* standard PRIVMSG */
-        }
+    static public String format(String message, String title) {
         String formatted = "";
 
-        /*formatted = command.toString().toUpperCase();
+        if (message.startsWith("/")) { /* user command */
+            Command command;
+            String parameters;
+            String text;
 
-        if (parameters != null && !parameters.equals("")) {
-            formatted += " " + parameters;
+            // TODO: format the user message according to the command
+        } else { /* standard PRIVMSG */
+            formatted = "PRIVMSG " + title + " :" + message;
         }
-
-        if (text != null && !text.equals("")) {
-            formatted += " :" + text;
-        }
-        */
 
         return formatted;
     }

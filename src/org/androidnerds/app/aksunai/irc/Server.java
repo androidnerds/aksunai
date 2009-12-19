@@ -269,9 +269,10 @@ public class Server extends MessageList {
      * before sending it to the server through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}
      *
      * @param message an unformatted string written by the user
+     * @param title the title of the active window
      */
-    public void userMessage(String message) {
-        sendMessage(UserMessage.format(message));
+    public void userMessage(String message, String title) {
+        sendMessage(UserMessage.format(message, title));
     }
 }
 
