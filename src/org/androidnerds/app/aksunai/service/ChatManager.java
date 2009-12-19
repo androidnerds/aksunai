@@ -139,4 +139,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     public void onLeave(String title) {
 
     }
+
+    public void onConnected() {
+    }
 }

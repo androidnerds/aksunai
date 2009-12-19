@@ -67,6 +67,7 @@ public class Server extends MessageList {
      *     <li>public void onNewMessage(Message message, MessageList mlist);</li>
      *     <li>public void onNickInUse();</li>
      *     <li>public void onLeave(String title);</li>
+     *     <li>public void onConnected();</li>
      * </ul>
      */
     public interface MessageListener {
@@ -74,6 +75,7 @@ public class Server extends MessageList {
         public void onNewMessage(Message message, MessageList mlist);
         public void onNickInUse();
         public void onLeave(String title);
+        public void onConnected();
     }
 
     /**
@@ -131,6 +133,16 @@ public class Server extends MessageList {
     }
 
     /**
+     * notifies the listeners that the user is connected
+     */
+    public void notifyConnected() {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user is connected");
+            ml.onConnected();
+        }
+    }
+
+    /**
      * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionManager}, formats it,
      * and adds it to the appropriate message list.
      *
@@ -144,6 +156,7 @@ public class Server extends MessageList {
         case _001:
             mNick = msg.mParameters[0];
             storeAndNotify(msg, this);
+            notifyConnected();
             break;
         case _431:
         case _432:
