@@ -47,6 +47,7 @@ public class ConnectionManager {
      * {@link org.androidnerds.app.aksunai.irc.Server}
      */
     public void sendMessage(Server server, String message) {
+    	mConnections.get(server).sendMessage(message);
     }
     
     public Server openConnection(ServerDetail sd) {

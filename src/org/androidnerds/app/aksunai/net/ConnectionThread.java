@@ -59,6 +59,15 @@ public class ConnectionThread implements Runnable {
     	return kill;
     }
     
+    public void sendMessage(String message) {
+    	try {
+    		mWriter.write(message + "\r\n");
+    		mWriter.flush();
+    	} catch (IOException e) {
+    		
+    	}
+    }
+    
     //TODO: figure out the best way to terminate the process on the user side for the connection exceptions.
     public void run() {
         try {
@@ -85,20 +94,11 @@ public class ConnectionThread implements Runnable {
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught sending login information. (Server) " + mServer + ", (Exception) " + e.toString());
         }
-
-        String line = null;
-        
+                
         //watch for server messages.
         try {
             while (!shouldKill()) {
-            	line = mReader.readLine();
-            	
-                if (line.startsWith("PING")) {
-                    mWriter.write("PONG " + line.substring(5) + "\r\n");
-                    mWriter.flush();
-                } else {
-                    mServer.receiveMessage(line);
-                }
+            	mServer.receiveMessage(mReader.readLine());
             }
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught handling messages. (Server) " + mServer + ", (Exception) " + e.toString());
