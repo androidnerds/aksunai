@@ -65,14 +65,14 @@ public class Server extends MessageList {
      * <ul>
      *     <li>public void onNewMessageList(MessageList mlist);</li>
      *     <li>public void onNewMessage(Message message, MessageList mlist);</li>
-     *     <li>public void onQuit();</li>
+     *     <li>public void onNickInUse();</li>
      *     <li>public void onLeave(String title);</li>
      * </ul>
      */
     public interface MessageListener {
         public void onNewMessageList(MessageList mlist);
         public void onNewMessage(Message message, MessageList mlist);
-        public void onQuit();
+        public void onNickInUse();
         public void onLeave(String title);
     }
 
@@ -109,12 +109,12 @@ public class Server extends MessageList {
     }
 
     /**
-     * notifies the listeners that the user disconnected
+     * notifies the listeners that the nickname is already in use
      */
-    public void notifyQuit() {
+    public void notifyNickInUse() {
         for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user has quit");
-            ml.onQuit();
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
+            ml.onNickInUse();
         }
     }
 
@@ -144,6 +144,12 @@ public class Server extends MessageList {
         case _001:
             mNick = msg.mParameters[0];
             /* fall through */
+        case _431:
+        case _432:
+        case _433:
+        case _434:
+            notifyNickInUse();
+            /* fall through */
         case OTHER:
             storeAndNotify(msg, this);
             break;
@@ -157,18 +163,14 @@ public class Server extends MessageList {
             }
             break;
         case QUIT:
-            if (msg.mSender.equals(mNick)) {
-                notifyQuit();
-            } else {
-                for (MessageList ml: mMessageLists.values()) {
-                    if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
-                        (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
+            for (MessageList ml: mMessageLists.values()) {
+                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                    (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
 
-                        if (ml.mType == MessageList.Type.CHANNEL) {
-                            ((Channel) ml).removeUser(msg.mSender);
-                        }
-                        storeAndNotify(msg, ml);
+                    if (ml.mType == MessageList.Type.CHANNEL) {
+                        ((Channel) ml).removeUser(msg.mSender);
                     }
+                    storeAndNotify(msg, ml);
                 }
             }
             break;
@@ -249,8 +251,7 @@ public class Server extends MessageList {
      * @param message an unformatted string written by the user
      */
     public void userMessage(String message) {
-        // TODO: formatting
-        sendMessage(message);
+        sendMessage(UserMessage.format(message));
     }
 }
 

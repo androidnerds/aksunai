@@ -22,7 +22,7 @@ import android.util.Log;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
- * UserMessage is used to format a command (and its parameters) nicely for a
+ * UserMessage is used to format a user typed message for a
  * {@link org.androidnerds.app.aksunai.irc.Server} to send to to the actual connected server
  * (through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}).
  */
@@ -30,21 +30,29 @@ public class UserMessage {
     /**
      * Returns the formatted string to send to the server.
      *
-     * @param command a Command
-     * @param parameters a string containing the parameters (may be empty or null)
-     * @param data a string containing the actual text data (may be empty or null)
+     * @param message a String, written by the user, to be formatted to send to a server
      * @return the formatted string to send to the server
      */
-    static public String format(Command command, String parameters, String data) {
-        String formatted = command.toString().toUpperCase();
+    static public String format(String message) {
+        Command command;
+        String parameters;
+        String text;
+
+        if (message.startsWith("/")) { /* user command */
+        } else { /* standard PRIVMSG */
+        }
+        String formatted = "";
+
+        /*formatted = command.toString().toUpperCase();
 
         if (parameters != null && !parameters.equals("")) {
             formatted += " " + parameters;
         }
 
-        if (data != null && !data.equals("")) {
-            formatted += " :" + data;
+        if (text != null && !text.equals("")) {
+            formatted += " :" + text;
         }
+        */
 
         return formatted;
     }

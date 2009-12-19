@@ -27,7 +27,11 @@ package org.androidnerds.app.aksunai.irc;
  */
 public enum Command {
     /* server initiated messages, no command, numeric */
-    _001 ("001"),
+    _001 ("001"), /* user connected */
+    _431 ("431"), /* no nickname given */
+    _432 ("432"), /* erroneus nickname */
+    _433 ("433"), /* nickname is already in use */
+    _434 ("434"), /* nickname collision */
     OTHER (""),
 
     /* connection registration */

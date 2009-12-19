@@ -133,7 +133,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 		
 	}
 
-    public void onQuit() {
+    public void onNickInUse() {
     }
 
     public void onLeave(String title) {
