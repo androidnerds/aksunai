@@ -143,7 +143,8 @@ public class Server extends MessageList {
         switch (msg.mCommand) {
         case _001:
             mNick = msg.mParameters[0];
-            /* fall through */
+            storeAndNotify(msg, this);
+            break;
         case _431:
         case _432:
         case _433:
@@ -153,6 +154,25 @@ public class Server extends MessageList {
         case OTHER:
             storeAndNotify(msg, this);
             break;
+        case NICK:
+            if (msg.mSender.equals(mNick)) {
+                mNick = msg.mText;
+            }
+            for (MessageList ml: mMessageLists.values()) {
+                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                    (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
+
+                    if (ml.mType == MessageList.Type.CHANNEL) {
+                        ((Channel) ml).removeUser(msg.mSender);
+                        ((Channel) ml).addUser(msg.mText);
+                    } else { /* change the title of the Private */
+                        mMessageLists.remove(ml.mTitle);
+                        ml.mTitle = msg.mText;
+                        mMessageLists.put(ml.mTitle, ml);
+                    }
+                    storeAndNotify(msg, ml);
+                }
+            }
         case JOIN:
             if (msg.mSender.equals(mNick)) {
                 mMessageLists.put(msg.mText, new Channel(msg.mText));
