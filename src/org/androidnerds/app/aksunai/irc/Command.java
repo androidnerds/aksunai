@@ -26,8 +26,9 @@ package org.androidnerds.app.aksunai.irc;
  * method will return the actual command to send to the irc server.
  */
 public enum Command {
-    /* server initiated messages, no command */
-    NONE (""),
+    /* server initiated messages, no command, numeric */
+    _001 ("001"),
+    OTHER (""),
 
     /* connection registration */
     PASS ("pass"),
@@ -105,6 +106,17 @@ public enum Command {
      */
     public boolean equalsIgnoreCase(String command) {
         return command.toLowerCase().equals(this.mStr);
+    }
+
+    /**
+     * Returns true if the internal representation of this command starts with the given string.
+     * The check is case insensitive.
+     *
+     * @param command a string to be compared to
+     * @return true if the internal representation starts with the parameter, case insensitively
+     */
+    public boolean startsWithIgnoreCase(String command) {
+        return this.mStr.startsWith(command.toLowerCase());
     }
 
     /**

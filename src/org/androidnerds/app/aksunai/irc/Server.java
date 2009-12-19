@@ -43,9 +43,7 @@ public class Server extends MessageList {
     private ConnectionManager mConnectionManager;
     public String mNick;
     private List<MessageListener> mListeners;
-    public Map<String, Channel> mChannels;
-    public Map<String, Private> mPrivates;
-    public Map<String, Notice> mNotices;
+    public Map<String, MessageList> mMessageLists;
 
     /**
      * Class constructor.
@@ -53,13 +51,11 @@ public class Server extends MessageList {
      * @param title a String, used as window title by the ChatManager
      */
     public Server(ConnectionManager cm, String title) {
-        super(title);
+        super(Type.SERVER, title);
         this.mType = Type.SERVER;
         this.mConnectionManager = cm;
         this.mListeners = Collections.synchronizedList(new ArrayList<MessageListener>());
-        this.mChannels = Collections.synchronizedMap(new HashMap<String, Channel>());
-        this.mPrivates = Collections.synchronizedMap(new HashMap<String, Private>());
-        this.mNotices = Collections.synchronizedMap(new HashMap<String, Notice>());
+        this.mMessageLists = Collections.synchronizedMap(new HashMap<String, MessageList>());
 
         notifyNewMessageList(this);
     }
@@ -69,11 +65,15 @@ public class Server extends MessageList {
      * <ul>
      *     <li>public void onNewMessageList(MessageList mlist);</li>
      *     <li>public void onNewMessage(Message message, MessageList mlist);</li>
+     *     <li>public void onQuit();</li>
+     *     <li>public void onLeave(String title);</li>
      * </ul>
      */
     public interface MessageListener {
         public void onNewMessageList(MessageList mlist);
         public void onNewMessage(Message message, MessageList mlist);
+        public void onQuit();
+        public void onLeave(String title);
     }
 
     /**
@@ -109,6 +109,28 @@ public class Server extends MessageList {
     }
 
     /**
+     * notifies the listeners that the user disconnected
+     */
+    public void notifyQuit() {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user has quit");
+            ml.onQuit();
+        }
+    }
+
+    /**
+     * notifies the listeners that the user left a channel
+     *
+     * @param title the name of the Channel left
+     */
+    public void notifyLeave(String title) {
+        for (MessageListener ml: mListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + title);
+            ml.onLeave(title);
+        }
+    }
+
+    /**
      * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionManager}, formats it,
      * and adds it to the appropriate message list.
      *
@@ -117,12 +139,64 @@ public class Server extends MessageList {
     public void receiveMessage(String message) {
         Message msg = new Message(message);
 
-        if (msg.mSender == null || msg.mCommand == Command.NONE) { /* sent by the server */
-            mMessages.add(msg);
-            notifyNewMessage(msg, this);
-        }
+        switch (msg.mCommand) {
+        case _001:
+            mNick = msg.mParameters[0];
+            /* fall through */
+        case OTHER:
+            storeAndNotify(msg, this);
+            break;
+        case JOIN:
+            if (msg.mSender.equals(mNick)) {
+                mMessageLists.put(msg.mText, (MessageList) new Channel(msg.mText));
+                notifyNewMessageList(mMessageLists.get(msg.mText));
+            } else {
+                ((Channel) mMessageLists.get(msg.mText)).addUser(msg.mSender);
+                storeAndNotify(msg, mMessageLists.get(msg.mText));
+            }
+            break;
+        case QUIT:
+            if (msg.mSender.equals(mNick)) {
+                notifyQuit();
+            } else {
+                for (MessageList mlist: mMessageLists.values()) {
+                    if ((mlist.mType == MessageList.Type.CHANNEL && ((Channel) mlist).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                        (mlist.mType == MessageList.Type.PRIVATE && mlist.mTitle.equals(msg.mSender))) { /* private message with this user */
 
+                        if (mlist.mType == MessageList.Type.CHANNEL) {
+                            ((Channel) mlist).removeUser(msg.mSender);
+                        }
+                        storeAndNotify(msg, mlist);
+                    }
+                }
+            }
+            break;
+        case PART:
+            if (msg.mSender.equals(mNick)) {
+                notifyLeave(msg.mParameters[0]);
+            } else {
+                Channel channel = (Channel) mMessageLists.get(msg.mParameters[0]);
+                channel.removeUser(msg.mSender);
+                storeAndNotify(msg, channel);
+            }
+        case PING:
+            sendMessage("PONG :" + msg.mText);
+            break;
         // TODO: rest of the parsing
+        default:
+            break;
+        }
+    }
+
+    /**
+     * stores the message in the appropriate MessageList, and notify the listeners.
+     *
+     * @param message the message to store
+     * @param mlist the message list in which to store the message
+     */
+    private void storeAndNotify(Message message, MessageList mlist) {
+        mlist.mMessages.add(message);
+        notifyNewMessage(message, mlist);
     }
 
     /**

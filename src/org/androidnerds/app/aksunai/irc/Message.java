@@ -63,7 +63,7 @@ public class Message {
             line = line.substring(1); /* strip the first ":" */
             String[] parts = line.split(" ", 3);
             
-            this.mSender = parts[0];
+            this.mSender = parts[0].substring(0, parts[0].indexOf("!")); /* nickname!n=username@hostname */
             if (parts.length >= 2) {
                 this.mCommand = getCommand(parts[1]);
             }
@@ -81,18 +81,19 @@ public class Message {
      * @return the command
      */
     public static Command getCommand(String str) {
+        Command cmd = Command.UNKNOWN;
         try {
             Integer.parseInt(str); /* if it's a numeric command, it's a server message */
-            return Command.NONE;
+            cmd = Command.OTHER;
         } catch (NumberFormatException e) {}
 
         for (Command c: Command.values()) {
-            if (c.equalsIgnoreCase(str)) {
-                return c;
+            if (c.startsWithIgnoreCase(str)) { /* using "startsWithIgnoreCase allows the command /j to be matched with /join */
+                cmd = c;
             }
         }
 
-        return Command.UNKNOWN;
+        return cmd;
     }
 
     /**

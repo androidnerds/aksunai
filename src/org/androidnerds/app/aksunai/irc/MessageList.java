@@ -43,7 +43,8 @@ public class MessageList {
      *
      * @param title a String, used as window title by the ChatManager
      */
-    public MessageList(String title) {
+    public MessageList(Type type, String title) {
+        this.mType = type;
         this.mTitle = title;
         this.mMessages = Collections.synchronizedList(new ArrayList<Message>());
     }

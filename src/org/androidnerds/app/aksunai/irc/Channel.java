@@ -28,7 +28,6 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * Channel holds a topic, an alphabetically sorted user list, and a list of messages.
  */
 public class Channel extends MessageList {
-    public String mTopic;
     public SortedSet<String> mUsers;
 
     /**
@@ -37,11 +36,27 @@ public class Channel extends MessageList {
      * @param title a String, used as window title by the ChatManager
      * @param topic a String, the topic and its setter
      */
-    public Channel(String title, String topic) {
-        super(title);
-        this.mType = Type.CHANNEL;
-        this.mTopic = topic;
+    public Channel(String title) {
+        super(Type.CHANNEL, title);
         this.mUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+    }
+
+    /**
+     * adds a nickname to the list of users.
+     *
+     * @param nick the nickname of the new user
+     */
+    public void addUser(String nick) {
+        this.mUsers.add(nick);
+    }
+
+    /**
+     * removes a nickname fromt he list of users.
+     *
+     * @param nick the nickname of the user to remove
+     */
+    public void removeUser(String nick) {
+        this.mUsers.remove(nick);
     }
 }
 
