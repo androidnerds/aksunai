@@ -64,7 +64,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
         //testing out this setting. it might not be needed.
-	setForeground(true);
+        setForeground(true);
     }
 
     @Override
@@ -96,10 +96,10 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     public IBinder onBind(Intent intent) {
         Log.i(AppConstants.CHAT_TAG, "Something is bound to the ChatManager");
 		
-	//binded services don't stay running. let's make sure we do.
-	startService(new Intent(this, ChatManager.class));
+        //binded services don't stay running. let's make sure we do.
+        startService(new Intent(this, ChatManager.class));
 		
-	return mBinder;
+        return mBinder;
     }
 	
     @Override
@@ -120,7 +120,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         //we need to keep an eye on the preferences while connected.
-	mPrefs = preferences;
+        mPrefs = preferences;
     }
 	
     /**
