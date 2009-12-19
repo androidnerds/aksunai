@@ -30,6 +30,7 @@ import android.widget.ViewFlipper;
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Server;
+import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.service.ChatManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -72,9 +73,13 @@ public class ChatActivity extends Activity {
 			
 			//we need to setup a view for each channel/pm in each server.
 			for (Server s : mManager.mConnections) {
-				//create a view for s.
-				for (Channel c : s.mChannels.values()) {
-					ChatView chat = new ChatView(ChatActivity.this, c, s);
+				//create a view for the server itself
+                ChatView chat = new ChatView(ChatActivity.this, s, s);
+                chat.setId(R.id.chat_flipper);
+
+                mFlipper.addView(chat);
+				for (MessageList c : s.mMessageLists.values()) {
+					chat = new ChatView(ChatActivity.this, c, s);
 					chat.setId(R.id.chat_flipper);
 					
 					mFlipper.addView(chat);
