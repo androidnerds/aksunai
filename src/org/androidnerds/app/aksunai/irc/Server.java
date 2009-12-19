@@ -138,6 +138,7 @@ public class Server extends MessageList {
      */
     public void receiveMessage(String message) {
         Message msg = new Message(message);
+        MessageList mlist;
 
         switch (msg.mCommand) {
         case _001:
@@ -148,7 +149,7 @@ public class Server extends MessageList {
             break;
         case JOIN:
             if (msg.mSender.equals(mNick)) {
-                mMessageLists.put(msg.mText, (MessageList) new Channel(msg.mText));
+                mMessageLists.put(msg.mText, new Channel(msg.mText));
                 notifyNewMessageList(mMessageLists.get(msg.mText));
             } else {
                 ((Channel) mMessageLists.get(msg.mText)).addUser(msg.mSender);
@@ -159,14 +160,14 @@ public class Server extends MessageList {
             if (msg.mSender.equals(mNick)) {
                 notifyQuit();
             } else {
-                for (MessageList mlist: mMessageLists.values()) {
-                    if ((mlist.mType == MessageList.Type.CHANNEL && ((Channel) mlist).mUsers.contains(msg.mSender)) || /* channels which have this user */
-                        (mlist.mType == MessageList.Type.PRIVATE && mlist.mTitle.equals(msg.mSender))) { /* private message with this user */
+                for (MessageList ml: mMessageLists.values()) {
+                    if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                        (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
 
-                        if (mlist.mType == MessageList.Type.CHANNEL) {
-                            ((Channel) mlist).removeUser(msg.mSender);
+                        if (ml.mType == MessageList.Type.CHANNEL) {
+                            ((Channel) ml).removeUser(msg.mSender);
                         }
-                        storeAndNotify(msg, mlist);
+                        storeAndNotify(msg, ml);
                     }
                 }
             }
@@ -179,6 +180,37 @@ public class Server extends MessageList {
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
+        case PRIVMSG:
+            if (msg.mParameters[0].equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */
+                mlist = mMessageLists.get(msg.mSender);
+                if (mlist == null) {
+                    mlist = new MessageList(MessageList.Type.PRIVATE, msg.mSender);
+                    mMessageLists.put(msg.mSender, mlist);
+                    notifyNewMessageList(mlist);
+                }
+            } else { /* channel :from_nick PRIVMSG to_channel :text */
+                mlist = mMessageLists.get(msg.mParameters[0]);
+                if (mlist == null) {
+                    mlist = new Channel(msg.mParameters[0]);
+                    mMessageLists.put(msg.mParameters[0], mlist);
+                    notifyNewMessageList(mlist);
+                }
+            }
+            storeAndNotify(msg, mlist);
+            break;
+        case NOTICE:
+            if (msg.mSender == null) { /* server notice */
+                storeAndNotify(msg, this);
+            } else { /* user notice */
+                mlist = mMessageLists.get("notices"); /* only one MessageList to hold all the user notices */
+                if (mlist == null) {
+                    mlist = new MessageList(MessageList.Type.NOTICE, msg.mSender);
+                    mMessageLists.put(msg.mSender, mlist);
+                    notifyNewMessageList(mlist);
+                }
+                storeAndNotify(msg, mlist);
+            }
+            break;
         case PING:
             sendMessage("PONG :" + msg.mText);
             break;
