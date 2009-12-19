@@ -34,14 +34,12 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * be sent, and from which the messages to the servers will be received.
  */
 public class ConnectionManager {
-    private Map<String, Server> mServers;
-    private Map<String, ConnectionThread>mThreads;
+    private Map<Server, ConnectionThread> mConnections;
     public Context mContext;
     
     public ConnectionManager(Context c) {
     	mContext = c;
-    	mServers = Collections.synchronizedMap(new HashMap<String, Server>());
-    	mThreads = Collections.synchronizedMap(new HashMap<String, ConnectionThread>());
+    	mConnections = Collections.synchronizedMap(new HashMap<Server, ConnectionThread>());
     }
     
     /**
@@ -52,10 +50,13 @@ public class ConnectionManager {
     }
     
     public Server openConnection(ServerDetail sd) {
-    	Server s = new Server(this, sd);
-    	mServers.put(sd.mName, s);
+    	Server s = new Server(this, sd.mName);
     	
-    	ConnectionThread t = new ConnectionThread(s);
+    	ConnectionThread t = new ConnectionThread(s, sd);
+    	Thread thr = new Thread(t);
+    	thr.start();
+    	
+    	mConnections.put(s, t);
     	
     	return s;
     }
