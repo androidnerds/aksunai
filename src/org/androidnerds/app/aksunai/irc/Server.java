@@ -216,6 +216,7 @@ public class Server extends MessageList {
             break;
         // TODO: rest of the parsing
         default:
+            storeAndNotify(msg, this);
             break;
         }
     }
@@ -244,6 +245,8 @@ public class Server extends MessageList {
     /**
      * takes a string from the {@link org.androidnerds.app.aksunai.service.ChatManager} and formats it
      * before sending it to the server through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}
+     *
+     * @param message an unformatted string written by the user
      */
     public void userMessage(String message) {
         // TODO: formatting
