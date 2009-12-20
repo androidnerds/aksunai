@@ -18,78 +18,44 @@
 package org.androidnerds.app.aksunai.irc;
 
 /**
- * Command is the enum used by {@link org.androidnerds.app.aksunai.irc.Message} and
- * {@link org.androidnerds.app.aksunai.irc.UserMessage}.
+ * Command is the enum used by {@link org.androidnerds.app.aksunai.irc.Message}.
  * <p>
  * It's used in switches, to style messages in windows, 
  * and the {@link org.androidnerds.app.aksunai.irc.Command#toString}
- * method will return the actual command to send to the irc server.
+ * method is used to compare to the actual command received from the irc server.
  */
 public enum Command {
     /* server initiated messages, no command, numeric */
-    _001 ("001"), /* user connected */
-    _431 ("431"), /* no nickname given */
-    _432 ("432"), /* erroneus nickname */
-    _433 ("433"), /* nickname is already in use */
-    _434 ("434"), /* nickname collision */
+    CONNECTED ("001"),              // :server 001 nick :Welcome to the freenode IRC Network OhanTest
+    NONICK ("431"),                 // :server 431 :No nickname given
+    ERRONEUSNICK ("432"),           // :server 432 * nick :Erroneous Nickname
+    NICKINUSE ("433"),              // :server 433 * nick :Nickname is already in use
+    NICKCOLLISION ("434"),          // :server 434 ???
     OTHER (""),
 
-    /* connection registration */
-    PASS ("pass"),
-    NICK ("nick"),
-    USER ("user"),
-    SERVER ("server"),
-    OPER ("oper"),
-    QUIT ("quit"),
-    SQUIT ("squit"),
+    /* user queries */
+    NICK ("NICK"),                  // :nick!n=user@host NICK :newnick
+    QUIT ("QUIT"),                  // :nick!n=user@host QUIT :reason
 
     /* channel operations */
-    JOIN ("join"),
-    PART ("part"),
-    MODE ("mode"),
-    TOPIC ("topic"),
-    NAMES ("names"),
-    LIST ("list"),
-    INVITE ("invite"),
-    KICK ("kick"),
-
-    /* server queries and commands */
-    VERSION ("version"),
-    STATS ("stats"),
-    LINKS ("links"),
-    TIME ("time"),
-    CONNECT ("connect"),
-    TRACE ("trace"),
-    ADMIN ("admin"),
-    INFO ("info"),
+    JOIN ("JOIN"),                  // :nick!n=user@host JOIN :#channel
+    PART ("PART"),                  // :nick!n=user@host PART #channel :reason
+    MODE ("MODE"),                  //
+    TOPIC ("TOPIC"),                // :nick!n=user@host TOPIC #channel :topic
+    NAMES ("NAMES"),                //
+    LIST ("LIST"),                  //
+    INVITE ("INVITE"),              // :nick!n=user@host INVITE othernick :#channel
+    KICK ("KICK"),                  // :nick!n=user@host KICK #channel othernick :reason
 
     /* sending messages */
-    PRIVMSG ("privmsg"),
-    NOTICE ("notice"),
-
-    /* user based queries */
-    WHO ("who"),
-    WHOIS ("whois"),
-    WHOWAS ("whowas"),
+    PRIVMSG ("PRIVMSG"),            // :nick!n=user@host PRIVMSG #channel :test
+    NOTICE ("NOTICE"),              // :nick!n=user@host NOTICE othernick :test
 
     /* miscellaneous messages */
-    KILL ("kill"),
-    PING ("ping"),
-    PONG ("pong"),
-    ERROR ("error"),
+    PING ("PING"),                  // PING :server
 
-    /* optionals */
-    AWAY ("away"),
-    REHASH ("rehash"),
-    RESTART ("restart"),
-    SUMMON ("summon"),
-    USERS ("users"),
-    WALLOPS ("wallops"),
-    USERHOST ("userhost"),
-    ISON ("ison"),
-    
     /* unknown command */
-    UNKNOWN ("unknown");
+    UNKNOWN ("UNKNOWN");
 
 
     private final String mStr;
@@ -109,7 +75,7 @@ public enum Command {
      * @return true if the parameter is equal to the string representation, case insensitively
      */
     public boolean equalsIgnoreCase(String command) {
-        return command.toLowerCase().equals(this.mStr);
+        return this.mStr.equals(command.toUpperCase());
     }
 
     /**
@@ -120,7 +86,7 @@ public enum Command {
      * @return true if the internal representation starts with the parameter, case insensitively
      */
     public boolean startsWithIgnoreCase(String command) {
-        return this.mStr.startsWith(command.toLowerCase());
+        return this.mStr.startsWith(command.toUpperCase());
     }
 
     /**

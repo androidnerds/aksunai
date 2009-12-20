@@ -153,15 +153,15 @@ public class Server extends MessageList {
         MessageList mlist;
 
         switch (msg.mCommand) {
-        case _001:
+        case CONNECTED:
             mNick = msg.mParameters[0];
             storeAndNotify(msg, this);
             notifyConnected();
             break;
-        case _431:
-        case _432:
-        case _433:
-        case _434:
+        case NONICK:
+        case ERRONEUSNICK:
+        case NICKINUSE:
+        case NICKCOLLISION:
             notifyNickInUse();
             /* fall through */
         case OTHER:

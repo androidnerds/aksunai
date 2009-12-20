@@ -37,16 +37,68 @@ public class UserMessage {
         String formatted = "";
 
         if (message.startsWith("/")) { /* user command */
-            Command command;
+            UserCommand command;
             String parameters;
             String text;
 
-            // TODO: format the user message according to the command
+            message = message.substring(1); /* drop the leading "/" */
+
+            String cmd_str = head(message); /* the first "word" is the command */
+            String params = tail(message);
+
+            Command cmd = Command.UNKNOWN;
+            for (Command c: Command.values()) {
+                if (c.startsWithIgnoreCase(cmd_str)) { /* using "startsWithIgnoreCase allows the command /j to be matched with /join */
+                    cmd = c;
+                }
+            }
+
+            switch (cmd) {
+            case JOIN:
+                formatted = "JOIN " + params;
+                break;
+            case PART:
+                formatted = "PART " + params;
+                break;
+            case PRIVMSG:
+                formatted = "PRIVMSG " + head(params) + " :" + tail(params);
+                break;
+            case QUIT:
+                if (params != null && !params.equals("")) {
+                    formatted = "QUIT :" + params;
+                } else {
+                    formatted = "QUIT :leaving";
+                }
+                break;
+            default: /* command unknown or not implemented: try to send it as is */
+                formatted = message; 
+                break;
+            }
         } else { /* standard PRIVMSG */
             formatted = "PRIVMSG " + title + " :" + message;
         }
 
         return formatted;
+    }
+
+    /**
+     * returns the first word.
+     *
+     * @param the string to get the head from
+     * @return the first word from the given string
+     */
+    public static String head(String msg) {
+        return msg.split(" ", 2)[0];
+    }
+
+    /**
+     * returns everything except the first word.
+     *
+     * @param the string to get the tail from
+     * @return everything except the first work from the given string
+     */
+    public static String tail(String msg) {
+        return msg.split(" ", 2)[1];
     }
 }
 
