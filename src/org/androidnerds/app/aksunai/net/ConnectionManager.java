@@ -17,11 +17,14 @@
  */
 package org.androidnerds.app.aksunai.net;
 
+import android.content.Context;
 import android.util.Log;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.androidnerds.app.aksunai.data.ServerDetail;
+import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -31,13 +34,32 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * be sent, and from which the messages to the servers will be received.
  */
 public class ConnectionManager {
-    private Map<String, Server> mServers;
-
+    private Map<Server, ConnectionThread> mConnections;
+    public Context mContext;
+    
+    public ConnectionManager(Context c) {
+    	mContext = c;
+    	mConnections = Collections.synchronizedMap(new HashMap<Server, ConnectionThread>());
+    }
+    
     /**
      * takes a formatted string and writes it to the connection to the server wich corresponds to the
      * {@link org.androidnerds.app.aksunai.irc.Server}
      */
     public void sendMessage(Server server, String message) {
+    	mConnections.get(server).sendMessage(message);
+    }
+    
+    public Server openConnection(ServerDetail sd) {
+    	Server s = new Server(this, sd.mName);
+    	
+    	ConnectionThread t = new ConnectionThread(s, sd);
+    	Thread thr = new Thread(t);
+    	thr.start();
+    	
+    	mConnections.put(s, t);
+    	
+    	return s;
     }
 }
 
