@@ -28,8 +28,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.androidnerds.app.aksunai.R;
-import org.androidnerds.app.aksunai.net.Channel;
-import org.androidnerds.app.aksunai.net.Server;
+import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.irc.MessageList;
+import org.androidnerds.app.aksunai.irc.Server;
 
 //TODO: fix the UI for the dialog. make it look nicer than it does.
 public class ChatSwitcher extends Dialog {
@@ -50,19 +51,19 @@ public class ChatSwitcher extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.chat_switcher_dialog);
         mContainer = (ViewGroup) findViewById(R.id.pseudogallery);
-
-        for (Channel c : mServer.channels.values()) {
+        
+        for (MessageList c : mServer.mMessageLists.values()) {
             LayoutInflater inflater = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View v = inflater.inflate(R.layout.chat_switcher_item, null);
 
             TextView tv = (TextView) v.findViewById(R.id.switcher_chat_title);
-            tv.setText(c.name);
+            tv.setText(c.mTitle);
 
             ImageView iv = (ImageView) v.findViewById(R.id.avatar);
             
-            if (c.type == Channel.TYPE.PM) {
+            if (c.mType == MessageList.Type.PRIVATE) {
             	iv.setImageResource(R.drawable.chat);
-            } else if (c.type == Channel.TYPE.CHANNEL){
+            } else if (c.mType == MessageList.Type.CHANNEL){
             	iv.setImageResource(R.drawable.channel);
             } else {
             	iv.setImageResource(R.drawable.server);
@@ -83,7 +84,6 @@ public class ChatSwitcher extends Dialog {
     private View.OnClickListener mClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             TextView chat = (TextView) v.findViewById(R.id.switcher_chat_title);
-            mServer.setActiveChannel(chat.getText().toString());
             dismiss();
         }
     };

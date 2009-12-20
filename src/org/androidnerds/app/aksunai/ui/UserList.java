@@ -42,10 +42,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.R;
-import org.androidnerds.app.aksunai.net.ConnectionService;
-import org.androidnerds.app.aksunai.net.Server;
+
 
 @SuppressWarnings(value = { "unchecked" })
 public class UserList extends ListActivity {
@@ -58,12 +58,12 @@ public class UserList extends ListActivity {
     public void onCreate(Bundle appState) {
         super.onCreate(appState);
 
-        mServer = ConnectionService.connections.get(ConnectionService.activeServer);
-        mServer.setUserHandler(mHandler);
+        //mServer = ConnectionService.connections.get(ConnectionService.activeServer);
+        //mServer.setUserHandler(mHandler);
 
-        mAdapter = new UserListAdapter(this, R.id.user_list_name, mServer);
+        //mAdapter = new UserListAdapter(this, R.id.user_list_name, mServer);
 
-        setTitle(mServer.activeChannel.name);
+        //setTitle(mServer.activeChannel.name);
         setContentView(R.layout.user_list);
 
         mSearchBox = (EditText) findViewById(R.id.nicksearch);
@@ -79,12 +79,12 @@ public class UserList extends ListActivity {
     public void onPause() {
         super.onPause();
 
-        mServer.freeUserHandler();
+        //mServer.freeUserHandler();
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo info) {
-        menu.setHeaderTitle(mServer.activeChannel.name + " " + getString(R.string.options));
+        menu.setHeaderTitle(getString(R.string.options));
 
         menu.add(getString(R.string.private_message));
         menu.add(getString(R.string.info));
@@ -96,7 +96,7 @@ public class UserList extends ListActivity {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 
         if (item.getTitle().equals(getString(R.string.private_message))) {
-            mServer.openNewPM(mAdapter.getItem(info.position));
+            //mServer.openNewPM(mAdapter.getItem(info.position));
             finish();
         }
 
@@ -131,11 +131,11 @@ public class UserList extends ListActivity {
         private Server mServer;
 
         public UserListAdapter(Context c, int res, Server server) {
-            super(c, res, server.activeChannel.users);
+            super(c, res, new ArrayList());
             mServer = server;
             mCtx = c;
-            mObjects = server.activeChannel.users;
-            mOriginalObjects = server.activeChannel.users;
+            //mObjects = server.activeChannel.users;
+            //mOriginalObjects = server.activeChannel.users;
             mInflater = LayoutInflater.from(mCtx);
         }
 
@@ -207,7 +207,7 @@ public class UserList extends ListActivity {
 
                 if (mObjects == null) {
                     synchronized (mLock) {
-                        mObjects = new ArrayList<String>(mServer.activeChannel.users);
+                        //mObjects = new ArrayList<String>(mServer.activeChannel.users);
                     }
                 }
 
@@ -259,22 +259,10 @@ public class UserList extends ListActivity {
                 if (results.count > 0) {
                     notifyDataSetChanged();
                 } else {
-                    mObjects = mServer.activeChannel.users;
+                    //mObjects = mServer.activeChannel.users;
                     notifyDataSetInvalidated();
                 }
             }
         }
     }
-
-    public Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            case Server.MSG_DATA_CHANGED:
-                if (mServer.activeChannel.name.equals(msg.obj) || msg.obj.equals("quit")) {
-                    mAdapter.updateData(mServer.activeChannel.users);
-                }
-                break;
-            }
-        }
-    };
 }

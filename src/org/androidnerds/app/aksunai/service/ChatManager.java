@@ -32,7 +32,6 @@ import android.util.Log;
 import java.util.List;
 
 import org.androidnerds.app.aksunai.data.ServerDetail;
-import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
@@ -78,6 +77,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     protected void stop() {
         if (mConnections.isEmpty()) {
         	stopSelf();
+
         }
     }
 	

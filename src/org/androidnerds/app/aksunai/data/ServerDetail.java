@@ -30,10 +30,10 @@ public class ServerDetail {
 	public String mRealName;
 	public int mPort;
 	
-	public ServerDetail(Context c, String name) {
+	public ServerDetail(Context c, long id) {
 		
 		ServerDbAdapter db = new ServerDbAdapter(c);
-		Cursor cur = db.getItem(name);
+		Cursor cur = db.getItem(id);
 		
 		if (cur.moveToNext()) {
 			mName = cur.getString(1);

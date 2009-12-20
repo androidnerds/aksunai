@@ -46,10 +46,10 @@
         </activity>
         
         <activity android:name=".ui.ServerDetail" android:configChanges="orientation|keyboardHidden"></activity>
-        <activity android:name=".ui.Chat" android:theme="@android:style/Theme.Light" android:configChanges="orientation|keyboardHidden"></activity>
+        <activity android:name=".ui.ChatActivity" android:theme="@android:style/Theme.Light" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name=".ui.UserList" android:configChanges="orientation|keyboardHidden"></activity>
         <activity android:name=".preferences.Preferences" android:configChanges="orientation|keyboardHidden"></activity>
         
-   		<service android:name=".net.ConnectionService" android:label="Connection Manager"></service>
+   		<service android:name=".service.ChatManager" android:label="Chat Manager"></service>
     </application>
 </manifest> 

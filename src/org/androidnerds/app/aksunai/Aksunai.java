@@ -38,9 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.androidnerds.app.aksunai.data.ServerDbAdapter;
-import org.androidnerds.app.aksunai.net.ConnectionService;
 import org.androidnerds.app.aksunai.preferences.Preferences;
-import org.androidnerds.app.aksunai.ui.Chat;
+import org.androidnerds.app.aksunai.ui.ChatActivity;
 import org.androidnerds.app.aksunai.ui.ServerDetail;
 
 import java.util.Vector;
@@ -99,18 +98,10 @@ public class Aksunai extends ListActivity {
         if (pos == 0) {
             newServer();
         } else {
-            if (!ConnectionService.IS_RUNNING) {
-                connectToServer(mAdapter.getItemId(pos - 1), mAdapter.getTitle(pos - 1));
-            } else {
-                if (!ConnectionService.connections.containsKey(mAdapter.getTitle(pos - 1))) {
-                    connectToServer(mAdapter.getItemId(pos - 1), mAdapter.getTitle(pos - 1));
-                } else {
-                    Intent i = new Intent(Aksunai.this, Chat.class);
-                    i.putExtra("id", mAdapter.getItemId(pos - 1));
-                    i.putExtra("name", mAdapter.getTitle(pos - 1));
-                    startActivity(i);
-                }
-            }
+        	Intent i = new Intent(Aksunai.this, ChatActivity.class);
+        	i.putExtra("id", id);
+            i.putExtra("title", mAdapter.getTitle(pos - 1));
+            startActivity(i);
         }
     }
 
@@ -126,25 +117,9 @@ public class Aksunai extends ListActivity {
 
         menu.setHeaderTitle(R.string.menu_server_options);
 
-        if (ConnectionService.IS_RUNNING) {
-            if (ConnectionService.connections.containsKey(mAdapter.getTitle(info.position - 1))) {
-                menu.add(R.string.menu_disconnect);
-            } else {
-                menu.add(R.string.connect);
-            }
-
-            if (ConnectionService.connections.containsKey(mAdapter.getTitle(info.position - 1))) {
-                menu.add(R.string.edit).setEnabled(false);
-                menu.add(R.string.remove).setEnabled(false);
-            } else {
-                menu.add(R.string.edit);
-                menu.add(R.string.remove);
-            }
-        } else {
-            menu.add(R.string.connect);
-            menu.add(R.string.edit);
-            menu.add(R.string.remove);
-        }
+        menu.add(R.string.connect);
+        menu.add(R.string.edit);
+        menu.add(R.string.remove);
     }
 
     @Override
@@ -169,7 +144,7 @@ public class Aksunai extends ListActivity {
         }
 
         if (item.getTitle().equals(getString(R.string.menu_disconnect))) {
-            ConnectionService.disconnectFromServer(mAdapter.getTitle(info.position - 1));
+            //ConnectionService.disconnectFromServer(mAdapter.getTitle(info.position - 1));
         }
 
         return false;
@@ -191,25 +166,10 @@ public class Aksunai extends ListActivity {
             return;
         }
 
-        //if the service is not running we need to kick it up.
-        if (!ConnectionService.IS_RUNNING) {
-            Intent serviceIntent = new Intent(Aksunai.this, ConnectionService.class);
-            serviceIntent.putExtra("id", id);
-            serviceIntent.putExtra("name", name);
-            ComponentName service = startService(serviceIntent);
-            assert(service != null);
-
-            Intent i = new Intent(Aksunai.this, Chat.class);
-            i.putExtra("id", id);
-            i.putExtra("name", name);
-            startActivity(i);
-        } else {
-            ConnectionService.NewServerConnection(this, id, name);
-            Intent i = new Intent(Aksunai.this, Chat.class);
-            i.putExtra("id", id);
-            i.putExtra("name", name);
-            startActivity(i);
-        }
+        Intent i = new Intent(Aksunai.this, ChatActivity.class);
+        i.putExtra("id", id);
+        i.putExtra("title", name);
+        startActivity(i);
     }
 
     public void initAdapter() {
