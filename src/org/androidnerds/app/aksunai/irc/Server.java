@@ -18,6 +18,8 @@
 package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
@@ -180,7 +182,13 @@ public class Server extends MessageList {
             storeAndNotify(msg, mlist);
             break;
         case CHANNEL_TOPIC_SETTER:
-            // TODO: decode the timestamp and convert to formatted date and time
+            /* decode the timestamp to have the human readable date when the topic was set */
+            String timestamp = msg.mParameters[3];
+
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
+            Date date = new Date(Integer.parseInt(timestamp));
+            msg.mText = msg.mParameters[2]+ ": " + formatter.format(date); /* nick: date */
+
             mlist = mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
             storeAndNotify(msg, mlist);
             break;
