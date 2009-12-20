@@ -27,10 +27,13 @@ package org.androidnerds.app.aksunai.irc;
 public enum Command {
     /* server initiated messages, no command, numeric */
     CONNECTED ("001"),              // :server 001 nick :Welcome to the freenode IRC Network OhanTest
-    NONICK ("431"),                 // :server 431 :No nickname given
-    ERRONEUSNICK ("432"),           // :server 432 * nick :Erroneous Nickname
-    NICKINUSE ("433"),              // :server 433 * nick :Nickname is already in use
-    NICKCOLLISION ("434"),          // :server 434 ???
+    CHANNEL_TOPIC ("332"),          // :server 332 nick #channel :topic
+    CHANNEL_TOPIC_SETTER ("333"),   // :server 333 nick #channel nick timestamp
+    USERS ("353"),                  // :server 353 nick = #channel :nick{,nick}
+    NO_NICK ("431"),                // :server 431 :No nickname given
+    ERRONEUS_NICK ("432"),          // :server 432 * nick :Erroneous Nickname
+    NICK_IN_USE ("433"),            // :server 433 * nick :Nickname is already in use
+    NICK_COLLISION ("434"),         // :server 434 ???
     OTHER (""),
 
     /* user queries */

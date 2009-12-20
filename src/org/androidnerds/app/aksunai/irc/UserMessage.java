@@ -58,7 +58,16 @@ public class UserMessage {
                 formatted = "JOIN " + params;
                 break;
             case PART:
-                formatted = "PART " + params;
+                if (params == null || params.equals("")) { /* part the active window */
+                    formatted = "PART " + title;
+                } else if (params.startsWith("#")) { /* part the given channel */
+                    String reason = tail(params);
+                    if (reason == null && reason.equals("")) { /* no reason given */
+                        formatted = "PART " + params;
+                    } else { /* part channel with reason */
+                        formatted = "PART " + head(params) + " :" + reason;
+                    }
+                }
                 break;
             case PRIVMSG:
                 formatted = "PRIVMSG " + head(params) + " :" + tail(params);

@@ -167,6 +167,7 @@ public class Server extends MessageList {
     public void receiveMessage(String message) {
         Message msg = new Message(message);
         MessageList mlist;
+        Channel channel;
 
         switch (msg.mCommand) {
         case CONNECTED:
@@ -174,10 +175,26 @@ public class Server extends MessageList {
             storeAndNotify(msg, this);
             notifyConnected();
             break;
-        case NONICK:
-        case ERRONEUSNICK:
-        case NICKINUSE:
-        case NICKCOLLISION:
+        case CHANNEL_TOPIC:
+            mlist = mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
+            storeAndNotify(msg, mlist);
+            break;
+        case CHANNEL_TOPIC_SETTER:
+            // TODO: decode the timestamp and convert to formatted date and time
+            mlist = mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
+            storeAndNotify(msg, mlist);
+            break;
+        case USERS:
+            String[] users = msg.mText.split(" ");
+            channel = (Channel) mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
+            for (String user: users) {
+                channel.addUser(user);
+            }
+            break;
+        case NO_NICK:
+        case ERRONEUS_NICK:
+        case NICK_IN_USE:
+        case NICK_COLLISION:
             notifyNickInUse();
             /* fall through */
         case OTHER:
@@ -227,7 +244,7 @@ public class Server extends MessageList {
             if (msg.mSender.equals(mNick)) {
                 notifyLeave(msg.mParameters[0]);
             } else {
-                Channel channel = (Channel) mMessageLists.get(msg.mParameters[0]);
+                channel = (Channel) mMessageLists.get(msg.mParameters[0]);
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
