@@ -61,6 +61,7 @@ public class ConnectionThread implements Runnable {
     
     public void sendMessage(String message) {
     	try {
+            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Send message: " + message);
     		mWriter.write(message + "\r\n");
     		mWriter.flush();
     	} catch (IOException e) {
@@ -91,7 +92,9 @@ public class ConnectionThread implements Runnable {
         //watch for server messages.
         try {
             while (!shouldKill()) {
-            	mServer.receiveMessage(mReader.readLine());
+                String message = mReader.readLine();
+                if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "Received message: " + message);
+            	mServer.receiveMessage(message);
             }
         } catch (IOException e) {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught handling messages. (Server) " + mServer + ", (Exception) " + e.toString());
