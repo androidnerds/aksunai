@@ -129,20 +129,24 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	 * MessageListeners
 	 */
 	public void onNewMessageList(MessageList mlist) {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + mlist + ")");
 		
 	}
 	
 	public void onNewMessage(Message message, MessageList mlist) {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessage(" + message + ", " + mlist + ")");
 		
 	}
 
     public void onNickInUse() {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNickInUse()");
     }
 
     public void onLeave(String title) {
-
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + title + ")");
     }
 
     public void onConnected() {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onConnected()");
     }
 }

@@ -63,7 +63,11 @@ public class Message {
             line = line.substring(1); /* strip the first ":" */
             String[] parts = line.split(" ", 3);
             
-            this.mSender = parts[0].substring(0, parts[0].indexOf("!")); /* nickname!n=username@hostname */
+            if (parts[0].indexOf("!") != -1) { /* nickname!n=username@hostname */
+                this.mSender = parts[0].substring(0, parts[0].indexOf("!"));
+            } else { /* crichton.freenode.net */
+                this.mSender = null; // no sender, it's from the server itself
+            }
             if (parts.length >= 2) {
                 this.mCommand = getCommand(parts[1]);
             }
