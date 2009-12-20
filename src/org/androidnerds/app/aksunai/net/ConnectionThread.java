@@ -86,14 +86,7 @@ public class ConnectionThread implements Runnable {
             if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught grabbing input/output streams. (Server) " + mServer + ", (Exception) " + e.toString());
         }
 
-        try {
-        	mWriter.write("PASS " + mServerDetail.mPass + "\r\n");
-            mWriter.write("NICK " + mServerDetail.mNick + "\r\n");
-            mWriter.write("USER " + mServerDetail.mUser + " 8 * :" + mServerDetail.mRealName + "\r\n");
-            mWriter.flush();
-        } catch (IOException e) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.NET_TAG, "IOException caught sending login information. (Server) " + mServer + ", (Exception) " + e.toString());
-        }
+        mServer.init(mServerDetail.mPass, mServerDetail.mNick, mServerDetail.mUser, mServerDetail.mRealName);
                 
         //watch for server messages.
         try {

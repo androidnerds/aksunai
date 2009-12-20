@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.androidnerds.app.aksunai.data.ServerDetail;
-import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -60,6 +59,17 @@ public class ConnectionManager {
     	mConnections.put(s, t);
     	
     	return s;
+    }
+    
+    public void closeConnection(Server s) {
+    	ConnectionThread t = mConnections.get(s);
+    	t.disconnect();
+    	
+    	if (AppConstants.DEBUG) {
+    		Log.d(AppConstants.NET_TAG, "Disconnecting from server: " + s.mTitle);
+    	}
+    	
+    	mConnections.remove(s);
     }
 }
 
