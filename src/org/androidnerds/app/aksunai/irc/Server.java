@@ -143,6 +143,22 @@ public class Server extends MessageList {
     }
 
     /**
+     * initializes a connection to the server by sending the PASS, NICK and USER commands.
+     *
+     * @param pass the server password, null if not needed
+     * @param nick the nickname
+     * @param username the username to register with
+     * @param realname the real name of the user
+     */
+    public void init(String pass, String nick, String username, String realname) {
+        if (pass != null && !pass.equals("")) {
+            sendMessage("PASS " + pass);
+        }
+        sendMessage("NICK " + nick);
+        sendMessage("USER " + username + " * * :" + realname);
+    }
+
+    /**
      * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionManager}, formats it,
      * and adds it to the appropriate message list.
      *
