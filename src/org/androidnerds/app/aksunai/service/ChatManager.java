@@ -31,11 +31,12 @@ import android.util.Log;
 
 import java.util.List;
 
-import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.irc.Server.MessageListener;
+import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -50,17 +51,19 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 
     private final IBinder mBinder = new ChatBinder();
     private NotificationManager mNotificationManager;
+    private ConnectionManager mConnectionManager;
     protected SharedPreferences mPrefs;
     public List<Server> mConnections;
 	
     @Override
     public void onCreate() {
-	Log.i(AppConstants.CHAT_TAG, "Creating the chat service.");
+    	Log.i(AppConstants.CHAT_TAG, "Creating the chat service.");
 		
-	mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-	mPrefs.registerOnSharedPreferenceChangeListener(this);
+    	mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
-	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mConnectionManager = new ConnectionManager(this);
 		
         //testing out this setting. it might not be needed.
         setForeground(true);
@@ -73,12 +76,13 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 
     protected void stop() {
         if (mConnections.isEmpty()) {
-	    stopSelf();
-	}
+        	stopSelf();
+
+        }
     }
 	
-    public void openServerConnection() {
-		
+    public void openServerConnection(ServerDetail details) {
+		mConnectionManager.openConnection(details);
     }
 	
     /**
@@ -86,9 +90,8 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
      */
     public void sendNotification() {
         if (!mPrefs.getBoolean(PreferenceConstants.NOTIFICATIONS, false)) {
-	    return;
-	}
-		
+        	return;
+        }	
     }
 	
     @Override
@@ -105,16 +108,16 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     public boolean onUnbind(Intent intent) {
        	
         if (mConnections.isEmpty()) {
-	    stop();
-	}
+        	stop();
+        }
 		
-	return true;
+        return true;
     }
 	
     public class ChatBinder extends Binder {
         public ChatManager getService() {
-	    return ChatManager.this;
-	}
+        	return ChatManager.this;
+        }
     }
 	
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {

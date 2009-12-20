@@ -28,6 +28,7 @@ import android.util.Log;
 import android.widget.ViewFlipper;
 
 import org.androidnerds.app.aksunai.R;
+import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
@@ -53,23 +54,35 @@ public class ChatActivity extends Activity {
 	public void onStart() {
 		super.onStart();
 		
-		if (AppConstants.DEBUG){
+		if (AppConstants.DEBUG) {
 			Log.d(AppConstants.CHAT_TAG, "Binding to the ChatManager service.");
 		}
 		
 		bindService(new Intent(this, ChatManager.class), mConnection, Context.BIND_AUTO_CREATE);
+		
 	}
 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mManager = ((ChatManager.ChatBinder) service).getService();
+			
+			//once the service is available see if we need a new connection.
+			if (getIntent().hasExtra("id")) {
+				Bundle extras = getIntent().getExtras();
+				ServerDetail details = new ServerDetail(ChatActivity.this, extras.getLong("id"));
+				
+				if (mManager != null) {
+					mManager.openServerConnection(details);
+				}
+			}
+			
 			mFlipper.removeAllViews();
 			
 			if (AppConstants.DEBUG) {
 				Log.d(AppConstants.CHAT_TAG, "Connected to the service.");
 			}
 			
-			mManager.mConnections.size();
+			/*mManager.mConnections.size();
 			
 			//we need to setup a view for each channel/pm in each server.
 			for (Server s : mManager.mConnections) {
@@ -84,7 +97,7 @@ public class ChatActivity extends Activity {
 					
 					mFlipper.addView(chat);
 				}
-			}
+			}*/
 		}
 		
 		public void onServiceDisconnected(ComponentName name) {

@@ -29,15 +29,6 @@ public class NetworkReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent i) {
         NetworkInfo n = (NetworkInfo) i.getExtras().get("networkInfo");
 
-        //TODO: find out what happens when a phone call comes in because that is crashing the app.
-        if (n.isConnected()) {
-            if (ConnectionService.IS_RUNNING && !ConnectionService.IS_CONNECTED) {
-                ConnectionService.networkAvailable();
-            }
-        } else {
-            if (ConnectionService.IS_RUNNING && ConnectionService.IS_CONNECTED) {
-                ConnectionService.networkUnavailable();
-            }
-        }
+        //n.isConnected()
     }
 }
