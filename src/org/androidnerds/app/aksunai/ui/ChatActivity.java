@@ -25,12 +25,20 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View.OnKeyListener;
+import android.view.View.OnClickListener;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ViewFlipper;
 
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Server;
+import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.service.ChatManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
@@ -39,15 +47,23 @@ public class ChatActivity extends Activity {
 
 	private ViewFlipper mFlipper;
 	private ChatManager mManager;
+    private EditText entry;
 	
 	@Override
 	public void onCreate(Bundle appState) {
 		super.onCreate(appState);
 		
-		setContentView(R.layout.chat_act);
+		setContentView(R.layout.chat);
 		
 		//grab the ViewFlipper from xml.
 		mFlipper = (ViewFlipper) findViewById(R.id.chat_flipper);
+        
+        entry = (EditText) findViewById(R.id.ircedit);
+        entry.setSingleLine();
+        entry.setOnKeyListener(mKeyListener);
+
+        Button btnSend = (Button) findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(mClickListener);
 	}
 	
 	@Override
@@ -88,14 +104,15 @@ public class ChatActivity extends Activity {
 			for (Server s : mManager.mConnections) {
 				//create a view for the server itself
                 ChatView chat = new ChatView(ChatActivity.this, s, s);
-                chat.setId(R.id.chat_flipper);
 
+                if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s);
                 mFlipper.addView(chat);
-				for (MessageList c : s.mMessageLists.values()) {
-					chat = new ChatView(ChatActivity.this, c, s);
+				for (MessageList mlist : s.mMessageLists.values()) {
+                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
+					chat = new ChatView(ChatActivity.this, mlist, s);
 					chat.setId(R.id.chat_flipper);
 					
-					mFlipper.addView(chat);
+					mFlipper.addView(chat, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 				}
 			}
 		}
@@ -104,4 +121,45 @@ public class ChatActivity extends Activity {
 			
 		}
 	};
+
+    private OnKeyListener mKeyListener = new OnKeyListener() {
+        public boolean onKey(View v, int i, KeyEvent k) {
+            if (k.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                sendUserMessage();
+                return false;
+            }
+
+            return false;
+        }
+    };
+
+    private OnClickListener mClickListener = new OnClickListener() {
+        public void onClick(View v) {
+            sendUserMessage();
+        }
+    };
+
+    private void sendUserMessage() {
+        String msg = entry.getText().toString();
+        
+        if (!msg.equals("")) { // don't send empty messages
+            ChatView chat = (ChatView) mFlipper.getCurrentView();
+            if (chat != null) {
+                String message = entry.getText().toString();
+                if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Sending user message: " + message);
+                chat.mServer.userMessage(message, chat.mMessageList);
+            }
+            entry.setText("");
+        }
+    }
+
+    public void createChat(Server server, MessageList mlist) {
+    }
+
+    public void updateChat(Server server, Message message, MessageList mlist) {
+        ChatView chat = (ChatView) mFlipper.getCurrentView();
+        if (chat.mServer == server && chat.mMessageList == mlist) { // only update if it's the current view
+            chat.updateChat();
+        }
+    }
 }

@@ -26,4 +26,5 @@
     <color name="action">#FF000000</color><!-- black -->
     <color name="join">#FF67CF75</color><!-- lightgreen -->
     <color name="part">#FFAA6D6D</color><!-- lightbrown -->
+    <color name="topic">#FFFF91F0</color><!-- pink -->
 </resources>

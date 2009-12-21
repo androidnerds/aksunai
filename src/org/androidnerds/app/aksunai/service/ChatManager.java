@@ -90,6 +90,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         this.mChatActivity = chatActivity;
         Server server = mConnectionManager.openConnection(details);
         server.setOnNewMessageListener(this);
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Adding new Server to the connections: " + server);
         mConnections.add(server);
     }
 	
@@ -138,12 +139,12 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	 */
 	public void onNewMessageList(Server server, MessageList mlist) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + mlist + ")");
-		
+	    mChatActivity.createChat(server, mlist);	
 	}
 	
 	public void onNewMessage(Server server, Message message, MessageList mlist) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessage(" + message + ", " + mlist + ")");
-		
+		mChatActivity.updateChat(server, message, mlist);
 	}
 
     public void onNickInUse(Server server) {

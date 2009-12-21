@@ -323,8 +323,8 @@ public class Server extends MessageList {
      * @param message an unformatted string written by the user
      * @param title the title of the active window
      */
-    public void userMessage(String message, String title) {
-        sendMessage(UserMessage.format(message, title));
+    public void userMessage(String message, MessageList mlist) {
+        sendMessage(UserMessage.format(message, mlist.mTitle));
     }
 }
 
