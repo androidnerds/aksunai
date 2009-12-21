@@ -25,6 +25,9 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
 import android.view.View.OnClickListener;
@@ -103,10 +106,51 @@ public class ChatActivity extends Activity {
 		}
 	};
 	
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        ChatView chat = (ChatView) mFlipper.getCurrentView();
+        MessageList mlist = mManager.mConnections.get(chat.mServerName).mMessageLists.get(chat.mMessageListName);
+        menu.findItem(R.id.menu_show_user_list).setEnabled(mlist.mType == MessageList.Type.CHANNEL);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO: propper menu handling
+        switch (item.getItemId()) {
+        case R.id.menu_close_window:
+            sendUserMessage("/part");
+            break;
+        case R.id.menu_open_windows:
+            showChatDialog();
+            break;
+        case R.id.menu_disconnect:
+            //ConnectionService.disconnectFromServer(ConnectionService.activeServer);
+            break;
+        case R.id.menu_show_user_list:
+            //startActivity(new Intent(Chat.this, UserList.class));
+            break;
+        }
+        return true;
+    }
+    
+    private void showChatDialog() {
+        // TODO: proper ChatSwitch display
+        //ChatSwitcher c = new ChatSwitcher(this, mServer);
+        //c.show();
+    }
+
     private OnKeyListener mKeyListener = new OnKeyListener() {
         public boolean onKey(View v, int i, KeyEvent k) {
             if (k.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                sendUserMessage();
+                sendUserInput();
                 return false;
             }
 
@@ -116,22 +160,25 @@ public class ChatActivity extends Activity {
 
     private OnClickListener mClickListener = new OnClickListener() {
         public void onClick(View v) {
-            sendUserMessage();
+            sendUserInput();
         }
     };
 
-    private void sendUserMessage() {
-        String msg = entry.getText().toString();
-        
-        if (!msg.equals("")) { // don't send empty messages
-            ChatView chat = (ChatView) mFlipper.getCurrentView();
-            if (chat != null) {
-                String message = entry.getText().toString();
-                if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Sending user message: " + message);
-                mManager.mConnections.get(chat.mServerName).userMessage(message, chat.mMessageListName);
-            }
-            entry.setText("");
+    private void sendUserMessage(String message) {
+        ChatView chat = (ChatView) mFlipper.getCurrentView();
+        if (chat != null) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Sending user message: " + message);
+            mManager.mConnections.get(chat.mServerName).userMessage(message, chat.mMessageListName);
         }
+    }
+
+    private void sendUserInput() {
+        String message = entry.getText().toString();
+        
+        if (!message.equals("")) { // don't send empty messages
+            sendUserMessage(message);
+        }
+        entry.setText("");
     }
 
     public void createChat(String serverName, String messageListName) {

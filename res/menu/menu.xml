@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_open_windows"
+        android:title="@string/chats"
+        android:icon="@drawable/ic_menu_chat_dashboard" />
+    <item android:id="@+id/menu_close_window"
+        android:title="@string/close"
+        android:icon="@drawable/ic_menu_end_conversation" />
+    <item android:id="@+id/menu_disconnect"
+        android:title="@string/disconnect"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel" />
+    <item android:id="@+id/menu_show_user_list"
+        android:title="@string/show_users"
+        android:icon="@drawable/ic_menu_friend_list" />
+</menu>

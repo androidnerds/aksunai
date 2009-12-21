@@ -97,7 +97,10 @@ public class UserMessage {
      * @return the first word from the given string
      */
     public static String head(String msg) {
-        return msg.split(" ", 2)[0];
+        if (msg != null) {
+            msg = msg.split(" ", 2)[0];
+        }
+        return msg;
     }
 
     /**
@@ -107,7 +110,15 @@ public class UserMessage {
      * @return everything except the first work from the given string
      */
     public static String tail(String msg) {
-        return msg.split(" ", 2)[1];
+        if (msg != null) {
+            String[] splitted = msg.split(" ", 2);
+            if (splitted.length == 2) {
+               msg = splitted[1];
+            } else {
+                msg = null;
+            }
+        }
+        return msg;
     }
 }
 
