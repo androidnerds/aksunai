@@ -20,6 +20,7 @@ package org.androidnerds.app.aksunai.ui;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
+import org.androidnerds.app.aksunai.util.AppConstants;
 
 public class ChatView extends ListView {
     private ChatAdapter mAdapter;
@@ -54,9 +56,13 @@ public class ChatView extends ListView {
 	}
 
     public void updateChat() {
-        mAdapter.notifyDataSetChanged();
+    	mAdapter.update(mMessageList);
     }
 
+    public void setList(MessageList ml) {
+    	mMessageList = ml;
+    }
+    
     private class ChatAdapter extends ArrayAdapter {
         private Context mCtx;
         private LayoutInflater mInflater;
@@ -85,9 +91,17 @@ public class ChatView extends ListView {
             colorMap.put("topic", mCtx.getResources().getColor(R.color.topic));
         }
 
+        public int getCount() {
+        	return mMessageList.mMessages.size();
+        }
+        
         public View getView(int pos, View convertView, ViewGroup parent) {
             TextView holder;
 
+            if (AppConstants.DEBUG) {
+            	Log.d(AppConstants.UI_TAG, "Running the getView method.");
+            }
+            
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.chat_row, parent, false);
 
@@ -104,6 +118,11 @@ public class ChatView extends ListView {
             return convertView;
         }
 
+        public void update(MessageList ml) {
+        	mMessageList = ml;
+        	notifyDataSetChanged();
+        }
+        
         private SpannableString ChatMessageFormattedString(Message message) {
              SpannableString formattedMessage = new SpannableString(message.mText);
 //           String chatMessage = sender.equals("") ? message : (sender + ": " + message);
