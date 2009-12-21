@@ -72,7 +72,7 @@ public class ChatActivity extends Activity {
 				ServerDetail details = new ServerDetail(ChatActivity.this, extras.getLong("id"));
 				
 				if (mManager != null) {
-					mManager.openServerConnection(details);
+					mManager.openServerConnection(ChatActivity.this, details);
 				}
 			}
 			
@@ -82,7 +82,7 @@ public class ChatActivity extends Activity {
 				Log.d(AppConstants.CHAT_TAG, "Connected to the service.");
 			}
 			
-			/*mManager.mConnections.size();
+			mManager.mConnections.size();
 			
 			//we need to setup a view for each channel/pm in each server.
 			for (Server s : mManager.mConnections) {
@@ -97,7 +97,7 @@ public class ChatActivity extends Activity {
 					
 					mFlipper.addView(chat);
 				}
-			}*/
+			}
 		}
 		
 		public void onServiceDisconnected(ComponentName name) {

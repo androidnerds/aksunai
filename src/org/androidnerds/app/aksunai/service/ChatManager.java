@@ -40,6 +40,7 @@ import org.androidnerds.app.aksunai.irc.MessageList;
 import org.androidnerds.app.aksunai.irc.Server.MessageListener;
 import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
+import org.androidnerds.app.aksunai.ui.ChatActivity;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
@@ -54,6 +55,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     private final IBinder mBinder = new ChatBinder();
     private NotificationManager mNotificationManager;
     private ConnectionManager mConnectionManager;
+    private ChatActivity mChatActivity;
     protected SharedPreferences mPrefs;
     public List<Server> mConnections;
 	
@@ -84,8 +86,11 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         }
     }
 	
-    public void openServerConnection(ServerDetail details) {
-		mConnectionManager.openConnection(details);
+    public void openServerConnection(ChatActivity chatActivity, ServerDetail details) {
+        this.mChatActivity = chatActivity;
+        Server server = mConnectionManager.openConnection(details);
+        server.setOnNewMessageListener(this);
+        mConnections.add(server);
     }
 	
     /**
@@ -131,25 +136,25 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	/**
 	 * MessageListeners
 	 */
-	public void onNewMessageList(MessageList mlist) {
+	public void onNewMessageList(Server server, MessageList mlist) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + mlist + ")");
 		
 	}
 	
-	public void onNewMessage(Message message, MessageList mlist) {
+	public void onNewMessage(Server server, Message message, MessageList mlist) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessage(" + message + ", " + mlist + ")");
 		
 	}
 
-    public void onNickInUse() {
+    public void onNickInUse(Server server) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNickInUse()");
     }
 
-    public void onLeave(String title) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + title + ")");
+    public void onLeave(Server server, MessageList mlist) {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + mlist + ")");
     }
 
-    public void onConnected() {
+    public void onConnected(Server server) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onConnected()");
     }
 }

@@ -58,8 +58,6 @@ public class Server extends MessageList {
         this.mConnectionManager = cm;
         this.mListeners = Collections.synchronizedList(new ArrayList<MessageListener>());
         this.mMessageLists = Collections.synchronizedMap(new HashMap<String, MessageList>());
-
-        notifyNewMessageList(this);
     }
 
     /**
@@ -73,11 +71,11 @@ public class Server extends MessageList {
      * </ul>
      */
     public interface MessageListener {
-        public void onNewMessageList(MessageList mlist);
-        public void onNewMessage(Message message, MessageList mlist);
-        public void onNickInUse();
-        public void onLeave(String title);
-        public void onConnected();
+        public void onNewMessageList(Server server, MessageList mlist);
+        public void onNewMessage(Server server, Message message, MessageList mlist);
+        public void onNickInUse(Server server);
+        public void onLeave(Server server, MessageList mlist);
+        public void onConnected(Server server);
     }
 
     /**
@@ -95,7 +93,7 @@ public class Server extends MessageList {
     public void notifyNewMessageList(MessageList mlist) {
         for (MessageListener ml: mListeners) {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message list: " + mlist);
-            ml.onNewMessageList(mlist);
+            ml.onNewMessageList(this, mlist);
         }
     }
 
@@ -108,7 +106,7 @@ public class Server extends MessageList {
     public void notifyNewMessage(Message message, MessageList mlist) {
         for (MessageListener ml: mListeners) {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message: " + message);
-            ml.onNewMessage(message, mlist);
+            ml.onNewMessage(this, message, mlist);
         }
     }
 
@@ -118,7 +116,7 @@ public class Server extends MessageList {
     public void notifyNickInUse() {
         for (MessageListener ml: mListeners) {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
-            ml.onNickInUse();
+            ml.onNickInUse(this);
         }
     }
 
@@ -127,10 +125,10 @@ public class Server extends MessageList {
      *
      * @param title the name of the Channel left
      */
-    public void notifyLeave(String title) {
+    public void notifyLeave(MessageList mlist) {
         for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + title);
-            ml.onLeave(title);
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + mlist);
+            ml.onLeave(this, mlist);
         }
     }
 
@@ -140,7 +138,7 @@ public class Server extends MessageList {
     public void notifyConnected() {
         for (MessageListener ml: mListeners) {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user is connected");
-            ml.onConnected();
+            ml.onConnected(this);
         }
     }
 
@@ -249,10 +247,10 @@ public class Server extends MessageList {
             }
             break;
         case PART:
+            channel = (Channel) mMessageLists.get(msg.mParameters[0]);
             if (msg.mSender.equals(mNick)) {
-                notifyLeave(msg.mParameters[0]);
+                notifyLeave(channel);
             } else {
-                channel = (Channel) mMessageLists.get(msg.mParameters[0]);
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
