@@ -29,6 +29,8 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.androidnerds.app.aksunai.data.ServerDetail;
@@ -64,6 +66,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 		
     	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mConnectionManager = new ConnectionManager(this);
+		mConnections = Collections.synchronizedList(new ArrayList<Server>());
 		
         //testing out this setting. it might not be needed.
         setForeground(true);
