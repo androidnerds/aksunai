@@ -50,9 +50,14 @@ public class ChatView extends ListView {
 
         this.mServer = server;
         this.mMessageList = mlist;
-
+        
+        setStackFromBottom(true);
+        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        setDividerHeight(0);
+        
         mAdapter = new ChatAdapter(context, mlist, server);
         this.setAdapter(mAdapter);
+       
 	}
 
     public void updateChat() {
