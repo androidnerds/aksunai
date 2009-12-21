@@ -66,7 +66,7 @@ public class ConnectionManager {
     	t.disconnect();
     	
     	if (AppConstants.DEBUG) {
-    		Log.d(AppConstants.NET_TAG, "Disconnecting from server: " + s.mTitle);
+    		Log.d(AppConstants.NET_TAG, "Disconnecting from server: " + s.mName);
     	}
     	
     	mConnections.remove(s);

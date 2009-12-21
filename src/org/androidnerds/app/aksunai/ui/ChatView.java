@@ -38,68 +38,57 @@ import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
+import org.androidnerds.app.aksunai.irc.MessageList.NewMessageListener;
+import org.androidnerds.app.aksunai.service.ChatManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 public class ChatView extends ListView {
-    private ChatAdapter mAdapter;
-    private Context mCtx;
-    public Server mServer;
-    public MessageList mMessageList;
+    public String mServerName;
+    public String mMessageListName;
 
-	public ChatView(Context context, MessageList mlist, Server server) {
-		super(context);
+	public ChatView(ChatActivity chatActivity, String serverName, String messageListName) {
+		super(chatActivity);
 
-        this.mCtx = context;
-
-        this.mServer = server;
-        this.mMessageList = mlist;
+        this.mServerName = serverName;
+        this.mMessageListName = messageListName;
         
         setStackFromBottom(true);
         setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
         setDividerHeight(0);
         
-        mAdapter = new ChatAdapter(context, mlist, server);
-        this.setAdapter(mAdapter);
-       
+        this.setAdapter(new ChatAdapter(chatActivity));
 	}
 
-    public void updateChat() {
-    	mAdapter.update();
-    }
-
-    private class ChatAdapter extends ArrayAdapter {
+    private class ChatAdapter extends ArrayAdapter implements NewMessageListener {
+        private ChatActivity mChatActivity;
         private LayoutInflater mInflater;
+        private ChatManager mManager;
+        private HashMap<String, Integer> mColorMap;
 
-        private HashMap<String, Integer> colorMap;
+        public ChatAdapter(ChatActivity chatActivity) {
+            super(chatActivity, R.layout.chat_row);
 
-        public ChatAdapter(Context c, MessageList mlist, Server server) {
-            super(c, R.layout.chat_row);
-
-            mInflater = LayoutInflater.from(mCtx);
+            this.mChatActivity = chatActivity;
+            this.mInflater = chatActivity.getLayoutInflater();
+            this.mManager = chatActivity.mManager;
 
             /* initialize the hashmap holding the colors */
-            colorMap = new HashMap<String, Integer>();
-            colorMap.put("nickname", mCtx.getResources().getColor(R.color.nickname));
-            colorMap.put("privmsg", mCtx.getResources().getColor(R.color.privmsg));
-            colorMap.put("ownmsg", mCtx.getResources().getColor(R.color.ownmsg));
-            colorMap.put("highlight", mCtx.getResources().getColor(R.color.highlight));
-            colorMap.put("action", mCtx.getResources().getColor(R.color.action));
-            colorMap.put("join", mCtx.getResources().getColor(R.color.join));
-            colorMap.put("part", mCtx.getResources().getColor(R.color.part));
-            colorMap.put("topic", mCtx.getResources().getColor(R.color.topic));
+            mColorMap = new HashMap<String, Integer>();
+            mColorMap.put("nickname", mChatActivity.getResources().getColor(R.color.nickname));
+            mColorMap.put("privmsg", mChatActivity.getResources().getColor(R.color.privmsg));
+            mColorMap.put("ownmsg", mChatActivity.getResources().getColor(R.color.ownmsg));
+            mColorMap.put("highlight", mChatActivity.getResources().getColor(R.color.highlight));
+            mColorMap.put("action", mChatActivity.getResources().getColor(R.color.action));
+            mColorMap.put("join", mChatActivity.getResources().getColor(R.color.join));
+            mColorMap.put("part", mChatActivity.getResources().getColor(R.color.part));
+            mColorMap.put("topic", mChatActivity.getResources().getColor(R.color.topic));
+
+            this.mManager.mConnections.get(mServerName).setOnNewMessageListener(this);
         }
 
-        public int getCount() {
-        	return mMessageList.mMessages.size();
-        }
-        
         public View getView(int pos, View convertView, ViewGroup parent) {
             TextView holder;
 
-            if (AppConstants.DEBUG) {
-            	Log.d(AppConstants.UI_TAG, "Running the getView method.");
-            }
-            
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.chat_row, parent, false);
 
@@ -109,16 +98,28 @@ public class ChatView extends ListView {
                 holder = (TextView) convertView.getTag();
             }
 
-            holder.setText(ChatMessageFormattedString(mMessageList.mMessages.get(pos)));
+            MessageList mlist = mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName);
+            holder.setText(ChatMessageFormattedString(mlist.mMessages.get(pos)));
 
             Linkify.addLinks(holder, Linkify.ALL);
                         
             return convertView;
         }
 
-        public void update() {
-        	notifyDataSetChanged();
+        public int getCount() {
+            MessageList mlist = mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName);
+            return mlist.mMessages.size();
         }
+
+        public void onNewMessage() {
+        	mChatActivity.runOnUiThread(update);
+        }
+
+        private Runnable update = new Runnable() {
+            public void run() {
+                notifyDataSetChanged();
+            }
+        };
         
         private SpannableString ChatMessageFormattedString(Message message) {
             SpannableString formattedMessage = new SpannableString("");

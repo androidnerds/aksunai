@@ -57,7 +57,7 @@ public class ChatSwitcher extends Dialog {
             View v = inflater.inflate(R.layout.chat_switcher_item, null);
 
             TextView tv = (TextView) v.findViewById(R.id.switcher_chat_title);
-            tv.setText(c.mTitle);
+            tv.setText(c.mName);
 
             ImageView iv = (ImageView) v.findViewById(R.id.avatar);
             

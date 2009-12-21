@@ -30,105 +30,110 @@ import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
- * Server is the holder for everything related to the server, its messages, notices, channels, private messages,
- * nick name, username, real name...
+ * Server is the holder for everything related to the server, its messages, notices, channels, private messages and nick name
  * <p>
- * It has four input/output points:
+ * It has the following input/output points:
  * <ul>
  *     <li>{@link org.androidnerds.app.aksunai.irc.Server#receiveMessage}: takes a raw string from the ConnectionManager</li>
  *     <li>{@link org.androidnerds.app.aksunai.irc.Server#sendMessage}: sends a raw string to the ConnectionManager</li>
- *     <li>{@link org.androidnerds.app.aksunai.irc.Server.MessageListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setOnNewMessageListener}</li>
- *     <li>{@link org.androidnerds.app.aksunai.irc.Server#userMessage}: takes a user string, formats it, and sends it via sendMessage</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server.MessageListListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setMessageListListener}</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server.IRCListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setIRCListener}</li>
+ *     <li>{@link org.androidnerds.app.aksunai.irc.Server#userMessage}: takes a user string, formats it, and sends it to the connection manager</li>
  * </ul>
  */
 public class Server extends MessageList {
     private ConnectionManager mConnectionManager;
     public String mNick;
-    private List<MessageListener> mListeners;
+    private List<MessageListListener> mMessageListListeners;
+    private List<IRCListener> mIRCListeners;
     public Map<String, MessageList> mMessageLists;
 
     /**
      * Class constructor.
      *
-     * @param title a String, used as window title by the ChatManager
+     * @param cm the connection manager
+     * @param name a String, used as the key to store and retrieve this server
      */
-    public Server(ConnectionManager cm, String title) {
-        super(Type.SERVER, title);
-        this.mType = Type.SERVER;
+    public Server(ConnectionManager cm, String name) {
+        super(Type.SERVER, name);
         this.mConnectionManager = cm;
-        this.mListeners = Collections.synchronizedList(new ArrayList<MessageListener>());
+        this.mMessageListListeners = Collections.synchronizedList(new ArrayList<MessageListListener>());
+        this.mIRCListeners = Collections.synchronizedList(new ArrayList<IRCListener>());
         this.mMessageLists = Collections.synchronizedMap(new HashMap<String, MessageList>());
+
+        // store this very MessageList in the list of MessageList
+        mMessageLists.put(name, this);
     }
 
     /**
-     * Message Listener. Listeners must implement the following methods:
+     * MessageList Listener. Listeners must implement the following methods:
      * <ul>
-     *     <li>public void onNewMessageList(MessageList mlist);</li>
-     *     <li>public void onNewMessage(Message message, MessageList mlist);</li>
-     *     <li>public void onNickInUse();</li>
-     *     <li>public void onLeave(String title);</li>
-     *     <li>public void onConnected();</li>
+     *     <li>public void onNewMessageList(String serverName, String messageListName);</li>
+     *     <li>public void onLeave(String serverName, String messageListName);</li>
      * </ul>
      */
-    public interface MessageListener {
-        public void onNewMessageList(Server server, MessageList mlist);
-        public void onNewMessage(Server server, Message message, MessageList mlist);
-        public void onNickInUse(Server server);
-        public void onLeave(Server server, MessageList mlist);
-        public void onConnected(Server server);
+    public interface MessageListListener {
+        public void onNewMessageList(String serverName, String messageListName);
+        public void onLeave(String serverName, String messageListName);
     }
 
     /**
-     * registers as a message listener.
+     * registers as a MessageList listener.
      */
-    public void setOnNewMessageListener(MessageListener ml) {
-        mListeners.add(ml);
+    public void setMessageListListener(MessageListListener mll) {
+        mMessageListListeners.add(mll);
     }
 
     /**
      * notifies the listeners that a new message list is available.
      *
-     * @param messageList the {@link org.androidnerds.app.aksunai.irc.MessageList} holding this new message
+     * @param name the name of the {@link org.androidnerds.app.aksunai.irc.MessageList} holding this new message
      */
-    public void notifyNewMessageList(MessageList mlist) {
-        for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message list: " + mlist);
-            ml.onNewMessageList(this, mlist);
-        }
-    }
-
-    /**
-     * notifies the listeners that a new message is available.
-     *
-     * @param message the new {@link org.androidnerds.app.aksunai.irc.Message}
-     * @param messageList the {@link org.androidnerds.app.aksunai.irc.MessageList} holding this new message
-     */
-    public void notifyNewMessage(Message message, MessageList mlist) {
-        for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message: " + message);
-            ml.onNewMessage(this, message, mlist);
-        }
-    }
-
-    /**
-     * notifies the listeners that the nickname is already in use
-     */
-    public void notifyNickInUse() {
-        for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
-            ml.onNickInUse(this);
+    public void notifyNewMessageList(String name) {
+        for (MessageListListener mll: mMessageListListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message list: " + name);
+            mll.onNewMessageList(this.mName, name);
         }
     }
 
     /**
      * notifies the listeners that the user left a channel
      *
-     * @param title the name of the Channel left
+     * @param name the name of the Channel left
      */
-    public void notifyLeave(MessageList mlist) {
-        for (MessageListener ml: mListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + mlist);
-            ml.onLeave(this, mlist);
+    public void notifyLeave(String name) {
+        for (MessageListListener mll: mMessageListListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + name);
+            mll.onLeave(this.mName, name);
+        }
+    }
+
+    /**
+     * IRC Listener. Listeners must implement the following methods:
+     * <ul>
+     *     <li>public void onNickInUse(String serverName);</li>
+     *     <li>public void onConnected(String serverName);</li>
+     * </ul>
+     */
+    public interface IRCListener {
+        public void onNickInUse(String serverName);
+        public void onConnected(String serverName);
+    }
+
+    /**
+     * registers as a IRC listener.
+     */
+    public void setIRCListener(IRCListener il) {
+        mIRCListeners.add(il);
+    }
+
+    /**
+     * notifies the listeners that the nickname is already in use
+     */
+    public void notifyNickInUse() {
+        for (IRCListener il: mIRCListeners) {
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
+            il.onNickInUse(this.mName);
         }
     }
 
@@ -136,9 +141,9 @@ public class Server extends MessageList {
      * notifies the listeners that the user is connected
      */
     public void notifyConnected() {
-        for (MessageListener ml: mListeners) {
+        for (IRCListener il: mIRCListeners) {
             if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user is connected");
-            ml.onConnected(this);
+            il.onConnected(this.mName);
         }
     }
 
@@ -187,7 +192,7 @@ public class Server extends MessageList {
             Date date = new Date(Integer.parseInt(timestamp));
             msg.mText = msg.mParameters[2]+ ": " + formatter.format(date); /* nick: date */
 
-            mlist = mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
+            mlist = mMessageLists.get(msg.mParameters[1]);
             storeAndNotify(msg, mlist);
             break;
         case USERS:
@@ -212,15 +217,15 @@ public class Server extends MessageList {
             }
             for (MessageList ml: mMessageLists.values()) {
                 if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
-                    (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
+                    (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
 
                     if (ml.mType == MessageList.Type.CHANNEL) {
                         ((Channel) ml).removeUser(msg.mSender);
                         ((Channel) ml).addUser(msg.mText);
                     } else { /* change the title of the Private */
-                        mMessageLists.remove(ml.mTitle);
-                        ml.mTitle = msg.mText;
-                        mMessageLists.put(ml.mTitle, ml);
+                        mMessageLists.remove(ml.mName);
+                        ml.mName = msg.mText;
+                        mMessageLists.put(ml.mName, ml);
                     }
                     storeAndNotify(msg, ml);
                 }
@@ -228,7 +233,7 @@ public class Server extends MessageList {
         case JOIN:
             if (msg.mSender.equals(mNick)) {
                 mMessageLists.put(msg.mText, new Channel(msg.mText));
-                notifyNewMessageList(mMessageLists.get(msg.mText));
+                notifyNewMessageList(mMessageLists.get(msg.mText).mName);
             } else {
                 ((Channel) mMessageLists.get(msg.mText)).addUser(msg.mSender);
                 storeAndNotify(msg, mMessageLists.get(msg.mText));
@@ -237,7 +242,7 @@ public class Server extends MessageList {
         case QUIT:
             for (MessageList ml: mMessageLists.values()) {
                 if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
-                    (ml.mType == MessageList.Type.PRIVATE && ml.mTitle.equals(msg.mSender))) { /* private message with this user */
+                    (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
 
                     if (ml.mType == MessageList.Type.CHANNEL) {
                         ((Channel) ml).removeUser(msg.mSender);
@@ -249,7 +254,7 @@ public class Server extends MessageList {
         case PART:
             channel = (Channel) mMessageLists.get(msg.mParameters[0]);
             if (msg.mSender.equals(mNick)) {
-                notifyLeave(channel);
+                notifyLeave(channel.mName);
             } else {
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
@@ -260,14 +265,14 @@ public class Server extends MessageList {
                 if (mlist == null) {
                     mlist = new MessageList(MessageList.Type.PRIVATE, msg.mSender);
                     mMessageLists.put(msg.mSender, mlist);
-                    notifyNewMessageList(mlist);
+                    notifyNewMessageList(mlist.mName);
                 }
             } else { /* channel :from_nick PRIVMSG to_channel :text */
                 mlist = mMessageLists.get(msg.mParameters[0]);
                 if (mlist == null) {
                     mlist = new Channel(msg.mParameters[0]);
                     mMessageLists.put(msg.mParameters[0], mlist);
-                    notifyNewMessageList(mlist);
+                    notifyNewMessageList(mlist.mName);
                 }
             }
             storeAndNotify(msg, mlist);
@@ -280,7 +285,7 @@ public class Server extends MessageList {
                 if (mlist == null) {
                     mlist = new MessageList(MessageList.Type.NOTICE, msg.mSender);
                     mMessageLists.put(msg.mSender, mlist);
-                    notifyNewMessageList(mlist);
+                    notifyNewMessageList(mlist.mName);
                 }
                 storeAndNotify(msg, mlist);
             }
@@ -303,7 +308,7 @@ public class Server extends MessageList {
      */
     private void storeAndNotify(Message message, MessageList mlist) {
         mlist.mMessages.add(message);
-        notifyNewMessage(message, mlist);
+        mlist.notifyNewMessage();
     }
 
     /**
@@ -321,10 +326,10 @@ public class Server extends MessageList {
      * before sending it to the server through the {@link org.androidnerds.app.aksunai.net.ConnectionManager}
      *
      * @param message an unformatted string written by the user
-     * @param title the title of the active window
+     * @param name the title of the active window
      */
-    public void userMessage(String message, MessageList mlist) {
-        sendMessage(UserMessage.format(message, mlist.mTitle));
+    public void userMessage(String message, String name) {
+        sendMessage(UserMessage.format(message, name));
     }
 }
 

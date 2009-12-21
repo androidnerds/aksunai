@@ -46,8 +46,8 @@ public class UserMessage {
             String cmd_str = head(message); /* the first "word" is the command */
             String params = tail(message);
 
-            Command cmd = Command.UNKNOWN;
-            for (Command c: Command.values()) {
+            UserCommand cmd = UserCommand.UNKNOWN;
+            for (UserCommand c: UserCommand.values()) {
                 if (c.startsWithIgnoreCase(cmd_str)) { /* using "startsWithIgnoreCase allows the command /j to be matched with /join */
                     cmd = c;
                 }

@@ -46,8 +46,8 @@ import org.androidnerds.app.aksunai.util.AppConstants;
 public class ChatActivity extends Activity {
 
 	private ViewFlipper mFlipper;
-	private ChatManager mManager;
     private EditText entry;
+	public ChatManager mManager;
 	
 	@Override
 	public void onCreate(Bundle appState) {
@@ -92,40 +92,14 @@ public class ChatActivity extends Activity {
 				}
 			}
 			
-			runOnUiThread(chatViewCreation);
+            mFlipper.removeAllViews();
+            
+            if (AppConstants.DEBUG) { Log.d(AppConstants.CHAT_TAG, "Connected to the service."); }
+            runOnUiThread(updateChatViews);
 		}
 		
 		public void onServiceDisconnected(ComponentName name) {
 			
-		}
-	};
-
-	private Runnable chatViewCreation = new Runnable() {
-		
-		public void run() {
-			mFlipper.removeAllViews();
-			
-			if (AppConstants.DEBUG) {
-				Log.d(AppConstants.CHAT_TAG, "Connected to the service.");
-			}
-			
-			mManager.mConnections.size();
-			
-			//we need to setup a view for each channel/pm in each server.
-			for (Server s : mManager.mConnections) {
-				//create a view for the server itself
-                ChatView chat = new ChatView(ChatActivity.this, s, s);
-
-                if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s);
-                mFlipper.addView(chat);
-				for (MessageList mlist : s.mMessageLists.values()) {
-                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
-					chat = new ChatView(ChatActivity.this, mlist, s);
-					chat.setId(R.id.chat_flipper);
-					
-					mFlipper.addView(chat, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-				}
-			}
 		}
 	};
 	
@@ -154,27 +128,48 @@ public class ChatActivity extends Activity {
             if (chat != null) {
                 String message = entry.getText().toString();
                 if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Sending user message: " + message);
-                chat.mServer.userMessage(message, chat.mMessageList);
+                mManager.mConnections.get(chat.mServerName).userMessage(message, chat.mMessageListName);
             }
             entry.setText("");
         }
     }
 
-    public void createChat(Server server, MessageList mlist) {
+    public void createChat(String serverName, String messageListName) {
+        runOnUiThread(updateChatViews);
     }
 
-    public void updateChat(Server server, Message message, MessageList mlist) {
-        ChatView chat = (ChatView) mFlipper.getCurrentView();
-        if (chat.mServer.mTitle == server.mTitle && chat.mMessageList.mTitle == mlist.mTitle) { // only update if it's the current view
-            chat.mMessageList = mlist;
-        	runOnUiThread(chatUpdater);
+    public Runnable updateChatViews = new Runnable() {
+        public void run() {
+            for (Server s : mManager.mConnections.values()) {
+                ChatView chat;
+                //create a view for the server itself
+                if (getChatView(s.mName, s.mName) == null) {
+                    chat = new ChatView(ChatActivity.this, s.mName, s.mName);
+
+                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s.mName);
+                    mFlipper.addView(chat);
+                }
+
+                //we need to setup a view for each channel/pm in this server
+                for (MessageList mlist : s.mMessageLists.values()) {
+                    if (getChatView(s.mName, mlist.mName) == null) {
+                        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
+                        chat = new ChatView(ChatActivity.this, s.mName, mlist.mName);
+                    
+                        mFlipper.addView(chat, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+                    }
+                }
+            }
         }
-    }
-    
-    private Runnable chatUpdater = new Runnable() {
-    	public void run() {
-    		ChatView chat = (ChatView) mFlipper.getCurrentView();
-    		chat.updateChat();
-    	}
     };
+
+    public ChatView getChatView(String serverName, String messageListName) {
+        for (int i = 0; i < mFlipper.getChildCount(); i++) {
+            ChatView chat = (ChatView) mFlipper.getChildAt(i);
+            if (chat.mServerName.equals(serverName) && chat.mMessageListName.equals(messageListName)) {
+                return chat;
+            }
+        }
+        return null;
+    }
 }

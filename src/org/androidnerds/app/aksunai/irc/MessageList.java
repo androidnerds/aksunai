@@ -28,29 +28,57 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * MessageList is the base class for {@link org.androidnerds.app.aksunai.irc.Server},
  * {@link org.androidnerds.app.aksunai.irc.Channel} and {@link org.androidnerds.app.aksunai.irc.Private}.
  * <p>
- * It holds the list of {@link org.androidnerds.app.aksunai.irc.Message} and a title (used as window title)
+ * {@link org.androidnerds.app.aksunai.irc.Server.NewMessageListener}: listeners may register with {@link org.androidnerds.app.aksunai.irc.Server#setOnNewMessageListener}.
+ * <p>
+ * It holds the list of {@link org.androidnerds.app.aksunai.irc.Message} and a name to identify it
  */
 public class MessageList {
     
     public enum Type { SERVER, CHANNEL, PRIVATE, NOTICE }
 
-    public String mTitle;
+    public String mName;
     public Type mType;
     public List<Message> mMessages;
+    private List<NewMessageListener> mNewMessageListeners;
 
     /**
      * Class constructor.
      *
-     * @param title a String, used as window title by the ChatManager
+     * @param name a String, used as window title by the ChatManager
      */
-    public MessageList(Type type, String title) {
+    public MessageList(Type type, String name) {
         this.mType = type;
-        this.mTitle = title;
+        this.mName = name;
         this.mMessages = Collections.synchronizedList(new ArrayList<Message>());
+        this.mNewMessageListeners = Collections.synchronizedList(new ArrayList<NewMessageListener>());
+    }
+
+    /**
+     * New Message Listener. Listeners must implement the following method:
+     *     public void onNewMessage(Message message, MessageList mlist);
+     */
+    public interface NewMessageListener {
+        public void onNewMessage();
+    }
+
+    /**
+     * registers as a new message listener.
+     */
+    public void setOnNewMessageListener(NewMessageListener nml) {
+        mNewMessageListeners.add(nml);
+    }
+
+    /**
+     * notifies the listeners that a new message is available.
+     */
+    public void notifyNewMessage() {
+        for (NewMessageListener nml: mNewMessageListeners) {
+            nml.onNewMessage();
+        }
     }
 
     public String toString() {
-        return "MessageList type=" + mType + " title=" + mTitle;
+        return "MessageList type=" + mType + " mName=" + mName;
     }
 }
 

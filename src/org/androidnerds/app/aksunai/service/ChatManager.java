@@ -29,15 +29,15 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
-import org.androidnerds.app.aksunai.irc.Server.MessageListener;
+import org.androidnerds.app.aksunai.irc.Server.MessageListListener;
 import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
 import org.androidnerds.app.aksunai.ui.ChatActivity;
@@ -50,14 +50,14 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * 
  * The ChatManager service is responsible for communicating the irc messages from the thread to the UI.
  */
-public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListener {
+public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListListener {
 
     private final IBinder mBinder = new ChatBinder();
     private NotificationManager mNotificationManager;
     private ConnectionManager mConnectionManager;
     private ChatActivity mChatActivity;
     protected SharedPreferences mPrefs;
-    public List<Server> mConnections;
+    public Map<String, Server> mConnections;
 	
     @Override
     public void onCreate() {
@@ -68,7 +68,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 		
     	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mConnectionManager = new ConnectionManager(this);
-		mConnections = Collections.synchronizedList(new ArrayList<Server>());
+		mConnections = Collections.synchronizedMap(new HashMap<String, Server>());
 		
         //testing out this setting. it might not be needed.
         setForeground(true);
@@ -89,9 +89,9 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     public void openServerConnection(ChatActivity chatActivity, ServerDetail details) {
         this.mChatActivity = chatActivity;
         Server server = mConnectionManager.openConnection(details);
-        server.setOnNewMessageListener(this);
+        server.setMessageListListener(this);
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Adding new Server to the connections: " + server);
-        mConnections.add(server);
+        mConnections.put(server.mName, server);
     }
 	
     /**
@@ -137,25 +137,14 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	/**
 	 * MessageListeners
 	 */
-	public void onNewMessageList(Server server, MessageList mlist) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + mlist + ")");
-	    mChatActivity.createChat(server, mlist);	
+	public void onNewMessageList(String serverName, String messageListName) {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + serverName + ", " + messageListName + ")");
+	    mChatActivity.createChat(serverName, messageListName);	
+        // TODO: notify if it's a PM (or notice?) and bring to front if it's a channel
 	}
 	
-	public void onNewMessage(Server server, Message message, MessageList mlist) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessage(" + message + ", " + mlist + ")");
-		mChatActivity.updateChat(server, message, mlist);
-	}
-
-    public void onNickInUse(Server server) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNickInUse()");
-    }
-
-    public void onLeave(Server server, MessageList mlist) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + mlist + ")");
-    }
-
-    public void onConnected(Server server) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onConnected()");
+	public void onLeave(String serverName, String messageListName) {
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + serverName + ", " + messageListName + ")");
+        // TODO: drop the ChatView and remove it from the NewMessage listeners
     }
 }

@@ -33,11 +33,10 @@ public class Channel extends MessageList {
     /**
      * Class constructor.
      *
-     * @param title a String, used as window title by the ChatManager
-     * @param topic a String, the topic and its setter
+     * @param name a String, used as the key to store and retrieve this server
      */
-    public Channel(String title) {
-        super(Type.CHANNEL, title);
+    public Channel(String name) {
+        super(Type.CHANNEL, name);
         this.mUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
     }
 
