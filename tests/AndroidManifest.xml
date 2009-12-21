@@ -36,5 +36,6 @@
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
                      android:targetPackage="org.androidnerds.app.aksunai"
-                     android:label="Tests for HostListActivity"/>
+                     android:label="Tests for AksunaiActivity"/>
+
 </manifest>

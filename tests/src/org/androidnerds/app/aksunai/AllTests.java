@@ -17,24 +17,14 @@
  */
 package org.androidnerds.app.aksunai;
 
-import org.androidnerds.app.aksunai.Aksunai;
+import android.test.suitebuilder.TestSuiteBuilder;
 
-import android.test.ActivityInstrumentationTestCase2;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-public class AksunaiTest extends ActivityInstrumentationTestCase2<Aksunai> {
-
-	public AksunaiTest() {
-		super("org.androidnerds.app.aksunai", Aksunai.class);
-	}
+public class AllTests extends TestSuite {
 	
-	public void testOpenMenu() {
-		Aksunai a = getActivity();
-		a.openOptionsMenu();
-		a.closeOptionsMenu();
-	}
-	
-	public void testOpenServer() {
-		Aksunai a = getActivity();
-		a.connectToServer(1, "irc.freenode.net");
+	public static Test suite() {
+		return new TestSuiteBuilder(AllTests.class).includeAllPackagesUnderHere().build();
 	}
 }

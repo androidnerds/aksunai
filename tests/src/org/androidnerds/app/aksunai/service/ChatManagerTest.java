@@ -15,26 +15,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.androidnerds.app.aksunai;
+package org.androidnerds.app.aksunai.service;
 
-import org.androidnerds.app.aksunai.Aksunai;
+import android.content.Intent;
+import android.os.IBinder;
+import android.test.ServiceTestCase;
 
-import android.test.ActivityInstrumentationTestCase2;
-
-public class AksunaiTest extends ActivityInstrumentationTestCase2<Aksunai> {
-
-	public AksunaiTest() {
-		super("org.androidnerds.app.aksunai", Aksunai.class);
+public class ChatManagerTest extends ServiceTestCase<ChatManager> {
+	
+	public ChatManagerTest() {
+		super(ChatManager.class);
 	}
 	
-	public void testOpenMenu() {
-		Aksunai a = getActivity();
-		a.openOptionsMenu();
-		a.closeOptionsMenu();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 	}
 	
-	public void testOpenServer() {
-		Aksunai a = getActivity();
-		a.connectToServer(1, "irc.freenode.net");
+	private Intent getIntent() {
+		return new Intent(getContext(), ChatManager.class);
+	}
+	
+	public void testStartable() {
+		startService(getIntent());
+	}
+	
+	public void testBindable() {
+		IBinder binder = bindService(getIntent());
 	}
 }

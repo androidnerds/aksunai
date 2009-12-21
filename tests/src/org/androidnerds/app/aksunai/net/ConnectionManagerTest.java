@@ -15,26 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.androidnerds.app.aksunai;
+package org.androidnerds.app.aksunai.net;
 
-import org.androidnerds.app.aksunai.Aksunai;
+import android.content.Context;
+import android.test.AndroidTestCase;
 
-import android.test.ActivityInstrumentationTestCase2;
+import org.androidnerds.app.aksunai.data.ServerDetail;
+import org.androidnerds.app.aksunai.irc.Server;
+import org.androidnerds.app.aksunai.net.ConnectionManager;
 
-public class AksunaiTest extends ActivityInstrumentationTestCase2<Aksunai> {
+public class ConnectionManagerTest extends AndroidTestCase {
 
-	public AksunaiTest() {
-		super("org.androidnerds.app.aksunai", Aksunai.class);
-	}
-	
-	public void testOpenMenu() {
-		Aksunai a = getActivity();
-		a.openOptionsMenu();
-		a.closeOptionsMenu();
-	}
-	
-	public void testOpenServer() {
-		Aksunai a = getActivity();
-		a.connectToServer(1, "irc.freenode.net");
+	public void testOpenConnection() {
+		Context c = getContext();
+		
+		ConnectionManager cm = new ConnectionManager(c);
+		ServerDetail sd = new ServerDetail(c, 1);
+		
+		Server s = cm.openConnection(sd);
+			
 	}
 }
