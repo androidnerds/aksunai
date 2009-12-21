@@ -92,6 +92,17 @@ public class ChatActivity extends Activity {
 				}
 			}
 			
+			runOnUiThread(chatViewCreation);
+		}
+		
+		public void onServiceDisconnected(ComponentName name) {
+			
+		}
+	};
+
+	private Runnable chatViewCreation = new Runnable() {
+		
+		public void run() {
 			mFlipper.removeAllViews();
 			
 			if (AppConstants.DEBUG) {
@@ -116,12 +127,8 @@ public class ChatActivity extends Activity {
 				}
 			}
 		}
-		
-		public void onServiceDisconnected(ComponentName name) {
-			
-		}
 	};
-
+	
     private OnKeyListener mKeyListener = new OnKeyListener() {
         public boolean onKey(View v, int i, KeyEvent k) {
             if (k.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
@@ -159,7 +166,14 @@ public class ChatActivity extends Activity {
     public void updateChat(Server server, Message message, MessageList mlist) {
         ChatView chat = (ChatView) mFlipper.getCurrentView();
         if (chat.mServer == server && chat.mMessageList == mlist) { // only update if it's the current view
-            chat.updateChat();
+            runOnUiThread(chatUpdater);
         }
     }
+    
+    private Runnable chatUpdater = new Runnable() {
+    	public void run() {
+    		ChatView chat = (ChatView) mFlipper.getCurrentView();
+    		chat.updateChat();
+    	}
+    };
 }
