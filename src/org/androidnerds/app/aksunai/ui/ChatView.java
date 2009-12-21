@@ -42,11 +42,14 @@ import org.androidnerds.app.aksunai.util.AppConstants;
 
 public class ChatView extends ListView {
     private ChatAdapter mAdapter;
+    private Context mCtx;
     public Server mServer;
     public MessageList mMessageList;
 
 	public ChatView(Context context, MessageList mlist, Server server) {
 		super(context);
+
+        this.mCtx = context;
 
         this.mServer = server;
         this.mMessageList = mlist;
@@ -61,26 +64,16 @@ public class ChatView extends ListView {
 	}
 
     public void updateChat() {
-    	mAdapter.update(mMessageList);
+    	mAdapter.update();
     }
 
-    public void setList(MessageList ml) {
-    	mMessageList = ml;
-    }
-    
     private class ChatAdapter extends ArrayAdapter {
-        private Context mCtx;
         private LayoutInflater mInflater;
-        private MessageList mMessageList;
-        private Server mServer;
 
         private HashMap<String, Integer> colorMap;
 
         public ChatAdapter(Context c, MessageList mlist, Server server) {
             super(c, R.layout.chat_row);
-            this.mCtx = c;
-            this.mMessageList = mlist;
-            this.mServer = server;
 
             mInflater = LayoutInflater.from(mCtx);
 
@@ -123,13 +116,15 @@ public class ChatView extends ListView {
             return convertView;
         }
 
-        public void update(MessageList ml) {
-        	mMessageList = ml;
+        public void update() {
         	notifyDataSetChanged();
         }
         
         private SpannableString ChatMessageFormattedString(Message message) {
-             SpannableString formattedMessage = new SpannableString(message.mText);
+            SpannableString formattedMessage = new SpannableString("");
+            if (message.mText != null) {
+                formattedMessage = new SpannableString(message.mText);
+            }
 //           String chatMessage = sender.equals("") ? message : (sender + ": " + message);
 //
 //           if (sender.equals("")) {

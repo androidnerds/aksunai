@@ -165,8 +165,8 @@ public class ChatActivity extends Activity {
 
     public void updateChat(Server server, Message message, MessageList mlist) {
         ChatView chat = (ChatView) mFlipper.getCurrentView();
-        if (chat.mServer == server && chat.mMessageList == mlist) { // only update if it's the current view
-            chat.setList(mlist);
+        if (chat.mServer.mTitle == server.mTitle && chat.mMessageList.mTitle == mlist.mTitle) { // only update if it's the current view
+            chat.mMessageList = mlist;
         	runOnUiThread(chatUpdater);
         }
     }
