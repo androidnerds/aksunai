@@ -25,12 +25,18 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.View.OnKeyListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -51,12 +57,27 @@ public class ChatActivity extends Activity {
 	private ViewFlipper mFlipper;
     private EditText entry;
 	public ChatManager mManager;
+
+    /* gesture listener */
+    private static final int SWIPE_MIN_DISTANCE = 100;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    private GestureDetector gestureDetector;
+	View.OnTouchListener gestureListener;
+    private Animation slideLeftIn;
+	private Animation slideLeftOut;
+	private Animation slideRightIn;
+    private Animation slideRightOut;
 	
 	@Override
 	public void onCreate(Bundle appState) {
 		super.onCreate(appState);
 		
 		setContentView(R.layout.chat);
+
+        slideLeftIn = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
+        slideLeftOut = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
+        slideRightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
+        slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
 		
 		//grab the ViewFlipper from xml.
 		mFlipper = (ViewFlipper) findViewById(R.id.chat_flipper);
@@ -67,8 +88,17 @@ public class ChatActivity extends Activity {
 
         Button btnSend = (Button) findViewById(R.id.btnSend);
         btnSend.setOnClickListener(mClickListener);
-	}
-	
+
+        /* fling detection */
+        gestureDetector = new GestureDetector(new MyGestureDetector());
+        gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
+        mFlipper.setOnTouchListener(gestureListener);
+    }
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -95,14 +125,13 @@ public class ChatActivity extends Activity {
 				}
 			}
 			
-            mFlipper.removeAllViews();
-            
             if (AppConstants.DEBUG) { Log.d(AppConstants.CHAT_TAG, "Connected to the service."); }
             runOnUiThread(updateChatViews);
 		}
 		
 		public void onServiceDisconnected(ComponentName name) {
-			
+            if (AppConstants.DEBUG) { Log.d(AppConstants.CHAT_TAG, "Disconnected from the service."); }
+            finish();
 		}
 	};
 	
@@ -165,6 +194,26 @@ public class ChatActivity extends Activity {
         }
     };
 
+    class MyGestureDetector extends SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) { /* right to left swipe */
+                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Fling left");
+                	mFlipper.setInAnimation(slideLeftIn);
+                    mFlipper.setOutAnimation(slideLeftOut);
+                	mFlipper.showNext();
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) { /* left to right swipe */
+                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Fling right");
+                	mFlipper.setInAnimation(slideRightIn);
+                    mFlipper.setOutAnimation(slideRightOut);
+                	mFlipper.showPrevious();
+                }
+            } catch (Exception e) {}
+            return false;
+        }
+    }
+
     private void sendUserMessage(String message) {
         ChatView chat = (ChatView) mFlipper.getCurrentView();
         if (chat != null) {
@@ -193,6 +242,7 @@ public class ChatActivity extends Activity {
                 //create a view for the server itself
                 if (getChatView(s.mName, s.mName) == null) {
                     chat = new ChatView(ChatActivity.this, s.mName, s.mName);
+                    chat.setOnTouchListener(gestureListener);
 
                     if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s.mName);
                     mFlipper.addView(chat);
@@ -203,6 +253,7 @@ public class ChatActivity extends Activity {
                     if (getChatView(s.mName, mlist.mName) == null) {
                         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
                         chat = new ChatView(ChatActivity.this, s.mName, mlist.mName);
+                        chat.setOnTouchListener(gestureListener);
                     
                         // TODO: add the view in the correct place to respect order (by server, and then alphabetically?): added in front for now
                         mFlipper.addView(chat, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));

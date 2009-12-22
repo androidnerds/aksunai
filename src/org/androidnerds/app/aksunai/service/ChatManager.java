@@ -144,7 +144,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	}
 	
 	public void onCloseMessageList(String serverName, String messageListName) {
-        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + serverName + ", " + messageListName + ")");
+        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onCloseMessageList(" + serverName + ", " + messageListName + ")");
         // TODO: drop the ChatView and remove it from the NewMessage listeners
     }
 }
