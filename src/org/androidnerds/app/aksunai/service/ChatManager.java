@@ -143,7 +143,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         // TODO: notify if it's a PM (or notice?) and bring to front if it's a channel
 	}
 	
-	public void onLeave(String serverName, String messageListName) {
+	public void onCloseMessageList(String serverName, String messageListName) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onLeave(" + serverName + ", " + messageListName + ")");
         // TODO: drop the ChatView and remove it from the NewMessage listeners
     }

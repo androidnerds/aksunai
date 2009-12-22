@@ -74,7 +74,7 @@ public class Server extends MessageList {
      */
     public interface MessageListListener {
         public void onNewMessageList(String serverName, String messageListName);
-        public void onLeave(String serverName, String messageListName);
+        public void onCloseMessageList(String serverName, String messageListName);
     }
 
     /**
@@ -89,9 +89,16 @@ public class Server extends MessageList {
      *
      * @param name the name of the {@link org.androidnerds.app.aksunai.irc.MessageList} holding this new message
      */
-    public void notifyNewMessageList(String name) {
+    public void notifyNewMessageList(String name, MessageList.Type type) {
+        if (type == MessageList.Type.CHANNEL) {
+            Channel channel = new Channel(name);
+            mMessageLists.put(name, channel);
+        } else {
+            MessageList mlist = new MessageList(type, name);
+            mMessageLists.put(name, mlist);
+        }
         for (MessageListListener mll: mMessageListListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new message list: " + name);
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new MessageList: " + name);
             mll.onNewMessageList(this.mName, name);
         }
     }
@@ -101,11 +108,12 @@ public class Server extends MessageList {
      *
      * @param name the name of the Channel left
      */
-    public void notifyLeave(String name) {
+    public void notifyCloseMessageList(String name) {
         for (MessageListListener mll: mMessageListListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a channel left: " + name);
-            mll.onLeave(this.mName, name);
+            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a MessageList closing: " + name);
+            mll.onCloseMessageList(this.mName, name);
         }
+        // TODO: drop the MessageList
     }
 
     /**
@@ -188,7 +196,8 @@ public class Server extends MessageList {
             /* decode the timestamp to have the human readable date when the topic was set */
             String timestamp = msg.mParameters[3];
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
+            // TODO: fix date formatting
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             Date date = new Date(Integer.parseInt(timestamp));
             msg.mText = msg.mParameters[2]+ ": " + formatter.format(date); /* nick: date */
 
@@ -232,8 +241,7 @@ public class Server extends MessageList {
             }
         case JOIN:
             if (msg.mSender.equals(mNick)) {
-                mMessageLists.put(msg.mText, new Channel(msg.mText));
-                notifyNewMessageList(mMessageLists.get(msg.mText).mName);
+                notifyNewMessageList(msg.mText, MessageList.Type.CHANNEL);
             } else {
                 ((Channel) mMessageLists.get(msg.mText)).addUser(msg.mSender);
                 storeAndNotify(msg, mMessageLists.get(msg.mText));
@@ -254,25 +262,24 @@ public class Server extends MessageList {
         case PART:
             channel = (Channel) mMessageLists.get(msg.mParameters[0]);
             if (msg.mSender.equals(mNick)) {
-                notifyLeave(channel.mName);
+                notifyCloseMessageList(channel.mName);
             } else {
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
         case PRIVMSG:
-            if (msg.mParameters[0].equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */
+            String dest = msg.mParameters[0];
+            if (dest.equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */
                 mlist = mMessageLists.get(msg.mSender);
                 if (mlist == null) {
-                    mlist = new MessageList(MessageList.Type.PRIVATE, msg.mSender);
-                    mMessageLists.put(msg.mSender, mlist);
-                    notifyNewMessageList(mlist.mName);
+                    notifyNewMessageList(msg.mSender, MessageList.Type.PRIVATE);
+                    mlist = mMessageLists.get(msg.mSender);
                 }
             } else { /* channel :from_nick PRIVMSG to_channel :text */
-                mlist = mMessageLists.get(msg.mParameters[0]);
+                mlist = mMessageLists.get(dest);
                 if (mlist == null) {
-                    mlist = new Channel(msg.mParameters[0]);
-                    mMessageLists.put(msg.mParameters[0], mlist);
-                    notifyNewMessageList(mlist.mName);
+                    notifyNewMessageList(dest, MessageList.Type.CHANNEL);
+                    mlist = mMessageLists.get(dest);
                 }
             }
             storeAndNotify(msg, mlist);
@@ -280,14 +287,10 @@ public class Server extends MessageList {
         case NOTICE:
             if (msg.mSender == null) { /* server notice */
                 storeAndNotify(msg, this);
-            } else { /* user notice */
-                mlist = mMessageLists.get("notices"); /* only one MessageList to hold all the user notices */
-                if (mlist == null) {
-                    mlist = new MessageList(MessageList.Type.NOTICE, msg.mSender);
-                    mMessageLists.put(msg.mSender, mlist);
-                    notifyNewMessageList(mlist.mName);
+            } else { /* user notice, display in each active window */
+                for (MessageList ml: mMessageLists.values()) {
+                    storeAndNotify(msg, ml);
                 }
-                storeAndNotify(msg, mlist);
             }
             break;
         case PING:
@@ -306,7 +309,7 @@ public class Server extends MessageList {
      * @param message the message to store
      * @param mlist the message list in which to store the message
      */
-    private void storeAndNotify(Message message, MessageList mlist) {
+    public void storeAndNotify(Message message, MessageList mlist) {
         mlist.mMessages.add(message);
         mlist.notifyNewMessage();
     }
@@ -329,7 +332,10 @@ public class Server extends MessageList {
      * @param name the title of the active window
      */
     public void userMessage(String message, String name) {
-        sendMessage(UserMessage.format(message, name));
+        String formatted = UserMessage.format(this, message, name);
+        if (formatted != null && !formatted.equals("")) {
+            sendMessage(formatted);
+        }
     }
 }
 

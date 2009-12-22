@@ -53,7 +53,7 @@ public class ChatView extends ListView {
         this.mMessageListName = messageListName;
         
         setStackFromBottom(true);
-        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL); // TODO: check why this doesn't work
         setDividerHeight(0);
         
         this.setAdapter(new ChatAdapter(chatActivity));
@@ -83,7 +83,7 @@ public class ChatView extends ListView {
             mColorMap.put("part", mChatActivity.getResources().getColor(R.color.part));
             mColorMap.put("topic", mChatActivity.getResources().getColor(R.color.topic));
 
-            this.mManager.mConnections.get(mServerName).setOnNewMessageListener(this);
+            this.mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName).setOnNewMessageListener(this);
         }
 
         public View getView(int pos, View convertView, ViewGroup parent) {

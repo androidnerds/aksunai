@@ -63,6 +63,14 @@ public enum UserCommand {
     INFO ("INFO"),                  // INFO [server]
     PONG ("PONG"),                  // PONG :text
 
+    /* CTCP messages */
+    CTCP ("CTCP"),                  // CTCP nick COMMAND (with COMMAND in { VERSION, SOURCE, USERINFO, CLIENTINFO, ERRMSG, PING, TIME })
+    ACTION ("ME"),                  // ACTION :message (converts to CTCP (nick|channel) ACTION)
+
+    /* convenient messages (not from the IRC RFC) */
+    CLOSE ("CLOSE"),                // CLOSE (does a /part on the current channel or closes the private message window)
+    QUERY ("QUERY"),                // QUERY nick (opens a private message window)
+
     /* unknown command */
     UNKNOWN ("");
 

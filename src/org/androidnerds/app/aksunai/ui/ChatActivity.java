@@ -126,12 +126,13 @@ public class ChatActivity extends Activity {
         // TODO: propper menu handling
         switch (item.getItemId()) {
         case R.id.menu_close_window:
-            sendUserMessage("/part");
+            sendUserMessage("/close");
             break;
         case R.id.menu_open_windows:
             showChatDialog();
             break;
         case R.id.menu_disconnect:
+            sendUserMessage("/quit");
             //ConnectionService.disconnectFromServer(ConnectionService.activeServer);
             break;
         case R.id.menu_show_user_list:
@@ -203,7 +204,9 @@ public class ChatActivity extends Activity {
                         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
                         chat = new ChatView(ChatActivity.this, s.mName, mlist.mName);
                     
-                        mFlipper.addView(chat, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+                        // TODO: add the view in the correct place to respect order (by server, and then alphabetically?): added in front for now
+                        mFlipper.addView(chat, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+                        mFlipper.setDisplayedChild(0);
                     }
                 }
             }

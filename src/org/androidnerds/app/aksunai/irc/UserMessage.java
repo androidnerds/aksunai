@@ -19,6 +19,8 @@ package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
 
+import org.androidnerds.app.aksunai.irc.MessageList;
+import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.util.AppConstants;
 
 /**
@@ -33,7 +35,7 @@ public class UserMessage {
      * @param message a String, written by the user, to be formatted to send to a server
      * @return the formatted string to send to the server
      */
-    static public String format(String message, String title) {
+    static public String format(Server server, String message, String title) {
         String formatted = "";
 
         if (message.startsWith("/")) { /* user command */
@@ -45,6 +47,8 @@ public class UserMessage {
 
             String cmd_str = head(message); /* the first "word" is the command */
             String params = tail(message);
+            String dest;
+            Message msg;
 
             UserCommand cmd = UserCommand.UNKNOWN;
             for (UserCommand c: UserCommand.values()) {
@@ -71,6 +75,22 @@ public class UserMessage {
                 break;
             case PRIVMSG:
                 formatted = "PRIVMSG " + head(params) + " :" + tail(params);
+                /* also add Message to the message list as we dont receive our own private messages back from the server */
+                dest= head(params);
+                msg = new Message(":" + server.mNick + "!n=username@host PRIVMSG " + dest + " :" + tail(params));
+                MessageList mlist = server.mMessageLists.get(dest);
+                if (mlist == null) { // add to the active window
+                    server.storeAndNotify(msg, server.mMessageLists.get(title));
+                } else { // add to the already created window
+                    server.storeAndNotify(msg, mlist);
+                }
+                break;
+            case NOTICE:
+                formatted = "NOTICE " + head(params) + " :" + tail(params);
+                /* also add Message to the message list as we dont receive our own notices back from the server */
+                dest= head(params);
+                msg = new Message(":" + server.mNick + "!n=username@host NOTICE " + dest + " :" + tail(params));
+                server.storeAndNotify(msg, server.mMessageLists.get(title)); // add to the active window
                 break;
             case QUIT:
                 if (params != null && !params.equals("")) {
@@ -79,12 +99,29 @@ public class UserMessage {
                     formatted = "QUIT :leaving";
                 }
                 break;
+            case CLOSE: /* shortcut to either /part the current channel or close the current private message window */
+                server.notifyCloseMessageList(title);
+                formatted = null;
+                break;
+            case QUERY:
+                server.notifyNewMessageList(head(params), MessageList.Type.PRIVATE);
+                formatted = null;
+                break;
             default: /* command unknown or not implemented: try to send it as is */
                 formatted = message; 
                 break;
             }
         } else { /* standard PRIVMSG */
-            formatted = "PRIVMSG " + title + " :" + message;
+            MessageList mlist = server.mMessageLists.get(title);
+            Message msg;
+            if (mlist.mType == MessageList.Type.SERVER) {
+                msg = new Message("NOTICE :No active chat/channel");
+            } else {
+                formatted = "PRIVMSG " + title + " :" + message;
+                /* also add Message to the message list as we dont receive our own private messages back from the server */
+                msg = new Message(":" + server.mNick + "!n=username@host PRIVMSG " + title + " :" + message);
+            }
+            server.storeAndNotify(msg, mlist);
         }
 
         return formatted;
