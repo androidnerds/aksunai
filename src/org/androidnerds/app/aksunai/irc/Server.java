@@ -22,12 +22,12 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
+import org.androidnerds.app.aksunai.util.LowerHashMap;
 
 /**
  * Server is the holder for everything related to the server, its messages, notices, channels, private messages and nick name
@@ -59,7 +59,7 @@ public class Server extends MessageList {
         this.mConnectionManager = cm;
         this.mMessageListListeners = Collections.synchronizedList(new ArrayList<MessageListListener>());
         this.mIRCListeners = Collections.synchronizedList(new ArrayList<IRCListener>());
-        this.mMessageLists = Collections.synchronizedMap(new HashMap<String, MessageList>());
+        this.mMessageLists = Collections.synchronizedMap(new LowerHashMap<MessageList>());
 
         // store this very MessageList in the list of MessageList
         mMessageLists.put(name, this);
@@ -239,6 +239,7 @@ public class Server extends MessageList {
                     storeAndNotify(msg, ml);
                 }
             }
+            break;
         case JOIN:
             if (msg.mSender.equals(mNick)) {
                 notifyNewMessageList(msg.mText, MessageList.Type.CHANNEL);
@@ -267,6 +268,7 @@ public class Server extends MessageList {
                 channel.removeUser(msg.mSender);
                 storeAndNotify(msg, channel);
             }
+            break;
         case PRIVMSG:
             String dest = msg.mParameters[0];
             if (dest.equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */

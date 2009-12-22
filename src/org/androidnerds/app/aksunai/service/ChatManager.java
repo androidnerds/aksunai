@@ -30,7 +30,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.androidnerds.app.aksunai.data.ServerDetail;
@@ -42,6 +41,7 @@ import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
 import org.androidnerds.app.aksunai.ui.ChatActivity;
 import org.androidnerds.app.aksunai.util.AppConstants;
+import org.androidnerds.app.aksunai.util.LowerHashMap;
 
 /**
  * 
@@ -68,7 +68,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 		
     	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mConnectionManager = new ConnectionManager(this);
-		mConnections = Collections.synchronizedMap(new HashMap<String, Server>());
+		mConnections = Collections.synchronizedMap(new LowerHashMap<Server>());
 		
         //testing out this setting. it might not be needed.
         setForeground(true);
