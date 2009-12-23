@@ -53,7 +53,6 @@
     <string name="unknown_command">Unknown Command</string>
     <string name="required_fields">Title, Server, Port, Username, and Nickname are required</string>
     <string name="no_network_connection">No network connection is available</string>
-    <string name="me">me</string>
     
     <!-- Menu Items -->
     <string name="chats">Chats</string>
@@ -82,6 +81,12 @@
     <string name="info_server">Server: </string>
     <string name="info_channels">Channels:</string>
     <string name="info_title_part">Info for</string>
+
+    <!-- Chat Dialog -->
+    <string name="has_joined">has joined</string>
+    <string name="has_left">has left</string>
+    <string name="has_quit">has quit</string>
+    <string name="nick_change">is now known as</string>
     
     <!-- Preference Strings -->
     <string name="general_pref_label">General Settings</string>

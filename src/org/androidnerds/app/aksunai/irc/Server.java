@@ -197,7 +197,7 @@ public class Server extends MessageList {
             String timestamp = msg.mParameters[3];
 
             // TODO: fix date formatting
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             Date date = new Date(Long.parseLong(timestamp) * 1000); /* date must be initialized with milliseconds, not seconds */
             msg.mText = msg.mParameters[2]+ ": " + formatter.format(date); /* nick: date */
 

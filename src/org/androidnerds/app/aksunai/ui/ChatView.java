@@ -18,8 +18,12 @@
 package org.androidnerds.app.aksunai.ui;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.util.Linkify;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +39,7 @@ import java.util.HashMap;
 
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.irc.Channel;
+import org.androidnerds.app.aksunai.irc.Command;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
@@ -74,7 +79,7 @@ public class ChatView extends ListView {
 
             /* initialize the hashmap holding the colors */
             mColorMap = new HashMap<String, Integer>();
-            mColorMap.put("nickname", mChatActivity.getResources().getColor(R.color.nickname));
+            mColorMap.put("sender", mChatActivity.getResources().getColor(R.color.sender));
             mColorMap.put("privmsg", mChatActivity.getResources().getColor(R.color.privmsg));
             mColorMap.put("ownmsg", mChatActivity.getResources().getColor(R.color.ownmsg));
             mColorMap.put("highlight", mChatActivity.getResources().getColor(R.color.highlight));
@@ -82,6 +87,7 @@ public class ChatView extends ListView {
             mColorMap.put("join", mChatActivity.getResources().getColor(R.color.join));
             mColorMap.put("part", mChatActivity.getResources().getColor(R.color.part));
             mColorMap.put("topic", mChatActivity.getResources().getColor(R.color.topic));
+            mColorMap.put("nick", mChatActivity.getResources().getColor(R.color.nick));
 
             this.mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName).setOnNewMessageListener(this);
         }
@@ -121,30 +127,62 @@ public class ChatView extends ListView {
             }
         };
         
-        private SpannableString ChatMessageFormattedString(Message message) {
-            SpannableString formattedMessage = new SpannableString("");
-            if (message.mText != null) {
-                formattedMessage = new SpannableString(message.mText);
-            }
-//           String chatMessage = sender.equals("") ? message : (sender + ": " + message);
-//
-//           if (sender.equals("")) {
-//               /* PART or JOIN message */
-//               formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("join")), 0, chatMessage.length(), 0);
-//               formattedMessage.setSpan(new StyleSpan(Typeface.ITALIC), 0, chatMessage.length(), 0);
-//           } else if (sender.equals(mServer.mNick)) {
-//               /* own message */
-//               formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("ownmsg")), 0, chatMessage.length(), 0);
-//           } else if (message.toLowerCase().contains(mNick.toLowerCase())) { // case insensitive check
-//               /* highlight */
-//               formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("highlight")), 0, chatMessage.length(), 0);
-//               formattedMessage.setSpan(new StyleSpan(Typeface.BOLD), 0, sender.length(), 0);
-//           } else {
-//               /* ACTION or PRIVMSG message */
-//               formattedMessage.setSpan(new ForegroundColorSpan(colorMap.get("nickname")), 0, sender.length(), 0);
-//           }
+        private SpannableStringBuilder ChatMessageFormattedString(Message message) {
+            String nick = mManager.mConnections.get(mServerName).mNick;
+            nick = (nick != null) ? nick : "!notset!";
 
-            return formattedMessage;
+            SpannableStringBuilder formatted = new SpannableStringBuilder();
+            SpannableStringBuilder sender = new SpannableStringBuilder((message.mSender != null) ? message.mSender : "");
+            SpannableStringBuilder text = new SpannableStringBuilder((message.mText != null) ? message.mText : "");
+
+            if (message.mCommand == Command.NICK) {
+                formatted.append(sender).append(" " + mChatActivity.getString(R.string.nick_change) + " ").append(text);
+                setColor(formatted, "nick");
+            } else if (sender.toString().toLowerCase().equals(nick.toLowerCase())) { /* own message */
+                if (!message.mParameters[0].toLowerCase().equals(mMessageListName.toLowerCase())) { /* private message or notice to somebody else */
+                    formatted.append(">" + message.mParameters[0] + "< ").append(text);
+                } else {
+                    formatted.append(sender).append(": ").append(text);
+                }
+                setColor(formatted, "ownmsg");
+            } else if (message.mCommand == Command.NOTICE && !sender.toString().equals("")) {
+                formatted.append("-").append(sender).append("- ").append(text);
+                setItalic(setColor(formatted, "highlight"));
+            } else if (message.mCommand == Command.CHANNEL_TOPIC || message.mCommand == Command.CHANNEL_TOPIC_SETTER) {
+                formatted.append(setColor(text, "topic"));
+            } else if (message.mCommand == Command.JOIN) {
+                formatted.append(setItalic(setColor(sender.append(" " + mChatActivity.getString(R.string.has_joined) + " ").append(text), "join")));
+            } else if (message.mCommand == Command.PART) {
+                formatted.append(sender).append(" " + mChatActivity.getString(R.string.has_left) + "(").append(text).append(")");
+                setItalic(setColor(formatted, "part"));
+            } else if (message.mCommand == Command.QUIT) {
+                formatted.append(sender).append(" " + mChatActivity.getString(R.string.has_quit) + "(").append(text).append(")");
+                setItalic(setColor(formatted, "part"));
+            } else if (sender.toString().equals("")) { /* server notice or message */
+                formatted.append("* ").append(text);
+            } else if (text.toString().toLowerCase().contains(nick.toLowerCase())) { /* highlight */
+                formatted.append(sender).append(": ").append(text);
+                setColor(formatted, "highlight");
+            } else { /* standard message */
+                formatted.append(setColor(sender, "sender")).append(": ").append(text);
+            }
+
+            return formatted;
+        }
+
+        private SpannableStringBuilder setColor(SpannableStringBuilder msg, String color) {
+            msg.setSpan(new ForegroundColorSpan(mColorMap.get(color)), 0, msg.length(), 0);
+            return msg;
+        }
+
+        private SpannableStringBuilder setBold(SpannableStringBuilder msg) {
+            msg.setSpan(new StyleSpan(Typeface.BOLD), 0, msg.length(), 0);
+            return msg;
+        }
+
+        private SpannableStringBuilder setItalic(SpannableStringBuilder msg) {
+            msg.setSpan(new StyleSpan(Typeface.ITALIC), 0, msg.length(), 0);
+            return msg;
         }
     }
 }

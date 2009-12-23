@@ -19,7 +19,7 @@
  */
  -->
 <resources>
-    <color name="nickname">#FF0000FF</color><!-- blue -->
+    <color name="sender">#FF0000FF</color><!-- blue -->
     <color name="privmsg">#FF000000</color><!-- black -->
     <color name="ownmsg">#FFAAAAAA</color><!-- lightgrey -->
     <color name="highlight">#FFFF0000</color><!-- red -->
@@ -27,4 +27,5 @@
     <color name="join">#FF67CF75</color><!-- lightgreen -->
     <color name="part">#FFAA6D6D</color><!-- lightbrown -->
     <color name="topic">#FFFF91F0</color><!-- pink -->
+    <color name="nick">#FF67CF75</color><!-- lightgreen -->
 </resources>
