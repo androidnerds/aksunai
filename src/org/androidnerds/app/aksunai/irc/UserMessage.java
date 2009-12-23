@@ -101,6 +101,9 @@ public class UserMessage {
                 break;
             case CLOSE: /* shortcut to either /part the current channel or close the current private message window */
                 server.notifyCloseMessageList(title);
+                if (server.mMessageLists.get(title).mType == MessageList.Type.CHANNEL) { /* called "/close" on a channel => convert to /part */
+                    server.sendMessage("PART " + title);
+                }
                 formatted = null;
                 break;
             case QUERY:
