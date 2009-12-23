@@ -50,7 +50,7 @@ public class ConnectionManager {
     }
     
     public Server openConnection(ServerDetail sd) {
-    	Server s = new Server(this, sd.mName);
+    	Server s = new Server(this, sd.mName, sd.mAutoJoin);
     	
     	ConnectionThread t = new ConnectionThread(s, sd);
     	Thread thr = new Thread(t);

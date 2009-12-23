@@ -28,6 +28,7 @@ public class ServerDetail {
 	public String mUser;
 	public String mPass;
 	public String mRealName;
+	public String mAutoJoin;
 	public int mPort;
 	
 	public ServerDetail(Context c, long id) {
@@ -43,6 +44,7 @@ public class ServerDetail {
 			mPass = cur.getString(5);
 			mPort = cur.getInt(6);
 			mRealName = cur.getString(7);
+			mAutoJoin = cur.getString(8);
 		}
 		
 		cur.close();

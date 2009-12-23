@@ -44,6 +44,7 @@ import org.androidnerds.app.aksunai.util.LowerHashMap;
 public class Server extends MessageList {
     private ConnectionManager mConnectionManager;
     public String mNick;
+    public String mAutoJoin;
     private List<MessageListListener> mMessageListListeners;
     private List<IRCListener> mIRCListeners;
     public Map<String, MessageList> mMessageLists;
@@ -54,12 +55,13 @@ public class Server extends MessageList {
      * @param cm the connection manager
      * @param name a String, used as the key to store and retrieve this server
      */
-    public Server(ConnectionManager cm, String name) {
+    public Server(ConnectionManager cm, String name, String autojoin) {
         super(Type.SERVER, name);
         this.mConnectionManager = cm;
         this.mMessageListListeners = Collections.synchronizedList(new ArrayList<MessageListListener>());
         this.mIRCListeners = Collections.synchronizedList(new ArrayList<IRCListener>());
         this.mMessageLists = Collections.synchronizedMap(new LowerHashMap<MessageList>());
+        this.mAutoJoin = autojoin;
 
         // store this very MessageList in the list of MessageList
         mMessageLists.put(name, this);
@@ -187,6 +189,9 @@ public class Server extends MessageList {
             mNick = msg.mParameters[0];
             storeAndNotify(msg, this);
             notifyConnected();
+            if (mAutoJoin != null && !mAutoJoin.equals("")) {
+                sendMessage("JOIN " + mAutoJoin);
+            }
             break;
         case CHANNEL_TOPIC:
             mlist = mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
