@@ -255,7 +255,7 @@ public class Server extends MessageList {
             break;
         case QUIT:
             for (MessageList ml: mMessageLists.values()) {
-                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).getUsers().contains(msg.mSender)) || /* channels which have this user */
                     (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
 
                     if (ml.mType == MessageList.Type.CHANNEL) {

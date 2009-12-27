@@ -18,9 +18,10 @@
 package org.androidnerds.app.aksunai.irc;
 
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.androidnerds.app.aksunai.util.AppConstants;
 
@@ -28,16 +29,16 @@ import org.androidnerds.app.aksunai.util.AppConstants;
  * Channel holds a topic, an alphabetically sorted user list, and a list of messages.
  */
 public class Channel extends MessageList {
-    public SortedSet<String> mUsers;
+    public List<String> mUsers;
 
     /**
      * Class constructor.
      *
-     * @param name a String, used as the key to store and retrieve this server
+     * @param name a String, used as the key to store and retrieve this channnel
      */
     public Channel(String name) {
         super(Type.CHANNEL, name);
-        this.mUsers = Collections.synchronizedSortedSet(new TreeSet<String>());
+        this.mUsers = Collections.synchronizedList(new ArrayList<String>());
     }
 
     /**
@@ -46,7 +47,7 @@ public class Channel extends MessageList {
      * @param nick the nickname of the new user
      */
     public void addUser(String nick) {
-        this.mUsers.add(nick);
+        mUsers.add(nick);
     }
 
     /**
@@ -55,7 +56,11 @@ public class Channel extends MessageList {
      * @param nick the nickname of the user to remove
      */
     public void removeUser(String nick) {
-        this.mUsers.remove(nick);
+        mUsers.remove(nick);
+    }
+    
+    public ArrayList<String> getUsers() {
+        return (ArrayList<String>) mUsers;
     }
 }
 

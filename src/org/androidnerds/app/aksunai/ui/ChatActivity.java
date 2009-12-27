@@ -165,7 +165,13 @@ public class ChatActivity extends Activity {
             //ConnectionService.disconnectFromServer(ConnectionService.activeServer);
             break;
         case R.id.menu_show_user_list:
-            //startActivity(new Intent(Chat.this, UserList.class));
+            ChatView chat = (ChatView) mFlipper.getCurrentView();
+            Intent intent = new Intent(this , UserList.class);
+            
+            intent.putExtra("server", chat.mServerName);
+            intent.putExtra("channel", chat.mMessageListName);
+            
+            startActivity(intent);
             break;
         }
         return true;

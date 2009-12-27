@@ -18,7 +18,11 @@
 package org.androidnerds.app.aksunai.ui;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,7 +46,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.androidnerds.app.aksunai.irc.Channel;
 import org.androidnerds.app.aksunai.irc.Server;
+import org.androidnerds.app.aksunai.service.ChatManager;
 import org.androidnerds.app.aksunai.util.AppConstants;
 import org.androidnerds.app.aksunai.R;
 
@@ -53,33 +59,26 @@ public class UserList extends ListActivity {
     private Server mServer;
     private UserListAdapter mAdapter;
     private EditText mSearchBox;
-
+    private static String server;
+    private static String channel;
+    public ChatManager manager;
+    
     @Override
     public void onCreate(Bundle appState) {
         super.onCreate(appState);
 
-        //mServer = ConnectionService.connections.get(ConnectionService.activeServer);
-        //mServer.setUserHandler(mHandler);
-
-        //mAdapter = new UserListAdapter(this, R.id.user_list_name, mServer);
-
-        //setTitle(mServer.activeChannel.name);
-        setContentView(R.layout.user_list);
-
-        mSearchBox = (EditText) findViewById(R.id.nicksearch);
-        mSearchBox.addTextChangedListener(mWatcher);
-
-        setListAdapter(mAdapter);
-        getListView().setTextFilterEnabled(true);
-
-        registerForContextMenu(getListView());
+        Bundle extras = getIntent().getExtras();
+        server = extras.getString("server");
+        channel = extras.getString("channel");
+        
+        bindService(new Intent(this, ChatManager.class), connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        //mServer.freeUserHandler();
+        
+        unbindService(connection);
     }
 
     @Override
@@ -102,7 +101,24 @@ public class UserList extends ListActivity {
 
         return false;
     }
+    
+    private ServiceConnection connection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            manager = ((ChatManager.ChatBinder) service).getService();
+            runOnUiThread(setupUi);
+        }
+        
+        public void onServiceDisconnected(ComponentName name) {
+        
+        }
+    };
 
+    private Runnable setupUi = new Runnable() {
+        public void run() {
+            buildUserList();
+        }
+    };
+    
     private TextWatcher mWatcher = new TextWatcher() {
         public void afterTextChanged(Editable s) {
 
@@ -119,7 +135,21 @@ public class UserList extends ListActivity {
         }
     };
 
+    public void buildUserList() {
+        mAdapter = new UserListAdapter(this, R.id.user_list_name, manager.mConnections.get(server));
 
+        setTitle(server);
+        setContentView(R.layout.user_list);
+
+        mSearchBox = (EditText) findViewById(R.id.nicksearch);
+        mSearchBox.addTextChangedListener(mWatcher);
+
+        setListAdapter(mAdapter);
+        getListView().setTextFilterEnabled(true);
+
+        registerForContextMenu(getListView());
+    }
+    
     private static class UserListAdapter extends ArrayAdapter<String> implements Filterable {
 
         private Context mCtx;
@@ -129,13 +159,15 @@ public class UserList extends ListActivity {
         private ArrayFilter mFilter;
         private LayoutInflater mInflater;
         private Server mServer;
-
-        public UserListAdapter(Context c, int res, Server server) {
+        private Channel mChannel;
+        
+        public UserListAdapter(Context c, int res, Server s) {
             super(c, res, new ArrayList());
-            mServer = server;
+            mServer = s;
             mCtx = c;
-            //mObjects = server.activeChannel.users;
-            //mOriginalObjects = server.activeChannel.users;
+            mChannel = (Channel) mServer.mMessageLists.get(channel);
+            mObjects = mChannel.mUsers;
+            mOriginalObjects = mChannel.mUsers;
             mInflater = LayoutInflater.from(mCtx);
         }
 
@@ -207,7 +239,7 @@ public class UserList extends ListActivity {
 
                 if (mObjects == null) {
                     synchronized (mLock) {
-                        //mObjects = new ArrayList<String>(mServer.activeChannel.users);
+                        mObjects = new ArrayList<String>(mChannel.mUsers);
                     }
                 }
 
@@ -259,7 +291,7 @@ public class UserList extends ListActivity {
                 if (results.count > 0) {
                     notifyDataSetChanged();
                 } else {
-                    //mObjects = mServer.activeChannel.users;
+                    mObjects = mChannel.mUsers;
                     notifyDataSetInvalidated();
                 }
             }
