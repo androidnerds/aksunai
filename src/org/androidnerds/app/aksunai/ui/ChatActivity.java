@@ -173,8 +173,9 @@ public class ChatActivity extends Activity {
     
     private void showChatDialog() {
         // TODO: proper ChatSwitch display
-        //ChatSwitcher c = new ChatSwitcher(this, mServer);
-        //c.show();
+        ChatView chat = (ChatView) mFlipper.getCurrentView();
+        ChatSwitcher c = new ChatSwitcher(this, mManager.mConnections.get(chat.mServerName));
+        c.show();
     }
 
     private OnKeyListener mKeyListener = new OnKeyListener() {
