@@ -59,8 +59,8 @@ public class Channel extends MessageList {
         mUsers.remove(nick);
     }
     
-    public ArrayList<String> getUsers() {
-        return (ArrayList<String>) mUsers;
+    public List<String> getUsers() {
+        return (List<String>) mUsers;
     }
 }
 
