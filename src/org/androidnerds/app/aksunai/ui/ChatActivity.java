@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import org.androidnerds.app.aksunai.R;
@@ -57,7 +58,8 @@ public class ChatActivity extends Activity {
 	private ViewFlipper mFlipper;
     private EditText entry;
 	public ChatManager mManager;
-
+    private ChatSwitcher mChatSwitcher;
+    
     /* gesture listener */
     private static final int SWIPE_MIN_DISTANCE = 100;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -180,8 +182,8 @@ public class ChatActivity extends Activity {
     private void showChatDialog() {
         // TODO: proper ChatSwitch display
         ChatView chat = (ChatView) mFlipper.getCurrentView();
-        ChatSwitcher c = new ChatSwitcher(this, mManager.mConnections.get(chat.mServerName));
-        c.show();
+        mChatSwitcher = new ChatSwitcher(this, mManager.mConnections.get(chat.mServerName), mSwitcherListener);
+        mChatSwitcher.show();
     }
 
     private OnKeyListener mKeyListener = new OnKeyListener() {
@@ -201,6 +203,18 @@ public class ChatActivity extends Activity {
         }
     };
 
+    private OnClickListener mSwitcherListener = new OnClickListener() {
+        public void onClick(View v) {
+            ChatView cv = (ChatView) mFlipper.getCurrentView();
+            TextView chat = (TextView) v.findViewById(R.id.switcher_chat_title);
+            ChatView c = getChatView(cv.mServerName, chat.getText().toString());
+            int i = mFlipper.indexOfChild(c);
+            mFlipper.setDisplayedChild(i);
+            mChatSwitcher.dismiss();
+            mChatSwitcher = null;
+        }
+    };
+    
     class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {

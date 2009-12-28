@@ -37,11 +37,13 @@ public class ChatSwitcher extends Dialog {
     private ViewGroup mContainer;
     private Server mServer;
     private Context mCtx;
-
-    public ChatSwitcher(Context c, Server s) {
+    private View.OnClickListener mClickListener;
+    
+    public ChatSwitcher(Context c, Server s, View.OnClickListener cl) {
         super(c, android.R.style.Theme_Dialog);
         mServer = s;
         mCtx = c;
+        mClickListener = cl;
     }
 
     @Override
@@ -80,11 +82,4 @@ public class ChatSwitcher extends Dialog {
     public void onStop() {
         super.onStop();
     }
-
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            TextView chat = (TextView) v.findViewById(R.id.switcher_chat_title);
-            dismiss();
-        }
-    };
 }
