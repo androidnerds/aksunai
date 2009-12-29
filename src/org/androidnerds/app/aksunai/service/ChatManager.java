@@ -19,6 +19,7 @@ package org.androidnerds.app.aksunai.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.util.Log;
 import java.util.Collections;
 import java.util.Map;
 
+import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
@@ -54,10 +56,11 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 
     private final IBinder mBinder = new ChatBinder();
     private NotificationManager mNotificationManager;
-    private ConnectionManager mConnectionManager;
+    private ConnectionManager mConnectionManager = new ConnectionManager(this);
     private ChatActivity mChatActivity;
     protected SharedPreferences mPrefs;
-    public Map<String, Server> mConnections;
+    public Map<String, Server> mConnections = Collections.synchronizedMap(new LowerHashMap<Server>());
+    private boolean running = false;
 	
     @Override
     public void onCreate() {
@@ -67,20 +70,20 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     	mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
     	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mConnectionManager = new ConnectionManager(this);
-		mConnections = Collections.synchronizedMap(new LowerHashMap<Server>());
 		
         //testing out this setting. it might not be needed.
         setForeground(true);
+        running = true;
     }
 
     @Override
     public void onDestroy() {
-       	
+       	Log.d(AppConstants.CHAT_TAG, "Service is being destroyed");
     }
 
     protected void stop() {
         if (mConnections.isEmpty()) {
+            running = false;
         	stopSelf();
 
         }
@@ -109,10 +112,17 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 		
         //binded services don't stay running. let's make sure we do.
         startService(new Intent(this, ChatManager.class));
-		
+        
         return mBinder;
     }
 	
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+        
+        Log.d(AppConstants.CHAT_TAG, "Something rebound to the ChatManager");
+    }
+    
     @Override
     public boolean onUnbind(Intent intent) {
        	
@@ -121,6 +131,10 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         }
 		
         return true;
+    }
+    
+    public boolean isRunning() {
+        return running;
     }
 	
     public class ChatBinder extends Binder {
@@ -141,6 +155,20 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onNewMessageList(" + serverName + ", " + messageListName + ")");
 	    mChatActivity.createChat(serverName, messageListName);	
         // TODO: notify if it's a PM (or notice?) and bring to front if it's a channel
+        
+        Server s = mConnections.get(serverName);
+        MessageList ml = s.mMessageLists.get(messageListName);
+        
+        if (ml.mType == MessageList.Type.PRIVATE) {
+            Intent i = new Intent(this, ChatActivity.class);
+            i.putExtra("server", serverName);
+            i.putExtra("chat", messageListName);
+            
+            PendingIntent pending = PendingIntent.getActivity(this, 0, i, 0);
+            Notification n = new Notification(android.R.drawable.stat_notify_chat, "New Message From " + messageListName, System.currentTimeMillis());
+            n.setLatestEventInfo(this, "Aksunai", "New Message From " + messageListName, pending);
+            mNotificationManager.notify(R.string.notify_new_private_chat, n);
+        }
 	}
 	
 	public void onCloseMessageList(String serverName, String messageListName) {

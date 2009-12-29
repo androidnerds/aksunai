@@ -18,6 +18,7 @@
 package org.androidnerds.app.aksunai.ui;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +60,7 @@ public class ChatActivity extends Activity {
     private EditText entry;
 	public ChatManager mManager;
     private ChatSwitcher mChatSwitcher;
+    private NotificationManager mNotificationManager;
     
     /* gesture listener */
     private static final int SWIPE_MIN_DISTANCE = 100;
@@ -99,6 +101,8 @@ public class ChatActivity extends Activity {
             }
         };
         mFlipper.setOnTouchListener(gestureListener);
+        
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
 	@Override
@@ -109,10 +113,36 @@ public class ChatActivity extends Activity {
 			Log.d(AppConstants.CHAT_TAG, "Binding to the ChatManager service.");
 		}
 		
-		bindService(new Intent(this, ChatManager.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, ChatManager.class), mConnection, Context.BIND_AUTO_CREATE);
 		
 	}
 	
+    @Override
+    public void onPause() {
+        super.onPause();        
+    }
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        
+        unbindService(mConnection);
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        mNotificationManager.cancel(R.string.notify_new_private_chat);
+        
+        Intent i = getIntent();
+        
+        if (i.hasExtra("server") && i.hasExtra("chat")) {
+            //receiving notification of a new chat.
+            Log.d(AppConstants.CHAT_TAG, "New notification has been received.");
+        }
+    }
+    
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mManager = ((ChatManager.ChatBinder) service).getService();
@@ -121,8 +151,9 @@ public class ChatActivity extends Activity {
 			if (getIntent().hasExtra("id")) {
 				Bundle extras = getIntent().getExtras();
 				ServerDetail details = new ServerDetail(ChatActivity.this, extras.getLong("id"));
-				
-				if (mManager != null) {
+				                
+				if (mManager.mConnections.containsKey(details.mName)) {
+                    Log.d(AppConstants.CHAT_TAG, "need to establish a connection.");
 					mManager.openServerConnection(ChatActivity.this, details);
 				}
 			}
