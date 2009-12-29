@@ -151,8 +151,15 @@ public class ChatActivity extends Activity {
 			if (getIntent().hasExtra("id")) {
 				Bundle extras = getIntent().getExtras();
 				ServerDetail details = new ServerDetail(ChatActivity.this, extras.getLong("id"));
-				                
-				if (mManager.mConnections.containsKey(details.mName)) {
+				
+                boolean found = false;
+                for (Server s : mManager.mConnections.values()) {
+                    if (s.mName.equals(details.mName)) {
+                        found = true;
+                    }
+                }
+
+				if (!found) {
                     Log.d(AppConstants.CHAT_TAG, "need to establish a connection.");
 					mManager.openServerConnection(ChatActivity.this, details);
 				}
