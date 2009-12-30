@@ -117,7 +117,7 @@ public class ChatView extends ListView {
             return mlist.mMessages.size();
         }
 
-        public void onNewMessage() {
+        public void onNewMessage(String message, String server, String list) {
         	mChatActivity.runOnUiThread(update);
         }
 

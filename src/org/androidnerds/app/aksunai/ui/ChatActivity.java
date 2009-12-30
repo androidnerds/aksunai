@@ -134,7 +134,8 @@ public class ChatActivity extends Activity {
         super.onResume();
         
         mNotificationManager.cancel(R.string.notify_new_private_chat);
-        
+        mNotificationManager.cancel(R.string.notify_nick_in_chat);
+
         Intent i = getIntent();
         
         if (i.hasExtra("server") && i.hasExtra("chat")) {

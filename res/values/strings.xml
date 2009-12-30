@@ -107,4 +107,5 @@
 
     <!-- Notification strings -->
     <string name="notify_new_private_chat">New Private Message</string>
+	<string name="notify_nick_in_chat">New Nick Message</string>
 </resources>

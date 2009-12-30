@@ -318,7 +318,7 @@ public class Server extends MessageList {
      */
     public void storeAndNotify(Message message, MessageList mlist) {
         mlist.mMessages.add(message);
-        mlist.notifyNewMessage();
+        mlist.notifyNewMessage(message.mText, mName, mlist.mName);
     }
 
     /**

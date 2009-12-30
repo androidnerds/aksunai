@@ -38,6 +38,7 @@ import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Message;
 import org.androidnerds.app.aksunai.irc.Server;
 import org.androidnerds.app.aksunai.irc.MessageList;
+import org.androidnerds.app.aksunai.irc.MessageList.NewMessageListener;
 import org.androidnerds.app.aksunai.irc.Server.MessageListListener;
 import org.androidnerds.app.aksunai.net.ConnectionManager;
 import org.androidnerds.app.aksunai.preferences.PreferenceConstants;
@@ -52,7 +53,7 @@ import org.androidnerds.app.aksunai.util.LowerHashMap;
  * 
  * The ChatManager service is responsible for communicating the irc messages from the thread to the UI.
  */
-public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListListener {
+public class ChatManager extends Service implements OnSharedPreferenceChangeListener, MessageListListener, NewMessageListener {
 
     private final IBinder mBinder = new ChatBinder();
     private NotificationManager mNotificationManager;
@@ -158,7 +159,8 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         
         Server s = mConnections.get(serverName);
         MessageList ml = s.mMessageLists.get(messageListName);
-        
+        ml.setOnNewMessageListener(this);
+
         if (ml.mType == MessageList.Type.PRIVATE) {
             Intent i = new Intent(this, ChatActivity.class);
             i.putExtra("server", serverName);
@@ -174,5 +176,27 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	public void onCloseMessageList(String serverName, String messageListName) {
         if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "onCloseMessageList(" + serverName + ", " + messageListName + ")");
         // TODO: drop the ChatView and remove it from the NewMessage listeners
+    }
+
+    public void onNewMessage(String message, String server, String list) {
+        Log.d(AppConstants.CHAT_TAG, "New message has been received: " + message);
+
+		//look for the nick in this message, if so we need to set a notification.
+		Server s = mConnections.get(server);
+		
+		if (message.contains(s.mNick)) {
+			if (!Character.isLetterOrDigit(message.charAt(message.indexOf(s.mNick) + s.mNick.length() - 1))) {
+				Log.d(AppConstants.CHAT_TAG, "** Your nick has been said in a message");
+				
+				Intent i = new Intent(this, ChatActivity.class);
+	            i.putExtra("server", server);
+	            i.putExtra("chat", list);
+
+	            PendingIntent pending = PendingIntent.getActivity(this, 0, i, 0);
+	            Notification n = new Notification(android.R.drawable.stat_notify_chat, "New Message In " + list, System.currentTimeMillis());
+	            n.setLatestEventInfo(this, "Aksunai", "New Message In " + list, pending);
+	            mNotificationManager.notify(R.string.notify_nick_in_chat, n);
+			}
+		}
     }
 }
