@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -67,7 +68,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     public void onCreate() {
     	Log.i(AppConstants.CHAT_TAG, "Creating the chat service.");
 		
-    	mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	mPrefs = getSharedPreferences("aksunai-prefs", MODE_PRIVATE);
     	mPrefs.registerOnSharedPreferenceChangeListener(this);
 		
     	mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -160,8 +161,9 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         Server s = mConnections.get(serverName);
         MessageList ml = s.mMessageLists.get(messageListName);
         ml.setOnNewMessageListener(this);
-
-        if (ml.mType == MessageList.Type.PRIVATE) {
+		boolean notify = mPrefs.getBoolean("pref_notification_bar", false);
+		
+        if (notify && ml.mType == MessageList.Type.PRIVATE) {
             Intent i = new Intent(this, ChatActivity.class);
             i.putExtra("server", serverName);
             i.putExtra("chat", messageListName);
@@ -169,6 +171,19 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
             PendingIntent pending = PendingIntent.getActivity(this, 0, i, 0);
             Notification n = new Notification(android.R.drawable.stat_notify_chat, "New Message From " + messageListName, System.currentTimeMillis());
             n.setLatestEventInfo(this, "Aksunai", "New Message From " + messageListName, pending);
+
+			String ringtone = mPrefs.getString("notification-ringtone", "");
+			
+			if (ringtone.equals("")) {
+				n.defaults |= Notification.DEFAULT_SOUND;
+			} else {
+				n.sound = Uri.parse(ringtone);
+			}
+			
+			if (mPrefs.getBoolean("pref_notification_vibrate", false)) {
+				n.vibrate = new long[] { 100, 250, 100, 250 };
+			}
+			
             mNotificationManager.notify(R.string.notify_new_private_chat, n);
         }
 	}
@@ -179,15 +194,12 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     }
 
     public void onNewMessage(String message, String server, String list) {
-        Log.d(AppConstants.CHAT_TAG, "New message has been received: " + message);
-
 		//look for the nick in this message, if so we need to set a notification.
 		Server s = mConnections.get(server);
-		
-		if (message.contains(s.mNick)) {
-			if (!Character.isLetterOrDigit(message.charAt(message.indexOf(s.mNick) + s.mNick.length() - 1))) {
-				Log.d(AppConstants.CHAT_TAG, "** Your nick has been said in a message");
+		boolean notify = mPrefs.getBoolean("pref_notification_bar", false);
 				
+		if (notify && message.contains(s.mNick)) {
+			if (!Character.isLetterOrDigit(message.charAt(message.indexOf(s.mNick) + s.mNick.length() - 1))) {				
 				Intent i = new Intent(this, ChatActivity.class);
 	            i.putExtra("server", server);
 	            i.putExtra("chat", list);
@@ -195,6 +207,19 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 	            PendingIntent pending = PendingIntent.getActivity(this, 0, i, 0);
 	            Notification n = new Notification(android.R.drawable.stat_notify_chat, "New Message In " + list, System.currentTimeMillis());
 	            n.setLatestEventInfo(this, "Aksunai", "New Message In " + list, pending);
+	
+				String ringtone = mPrefs.getString("notification-ringtone", "");
+				
+				if (ringtone.equals("")) {
+					n.defaults |= Notification.DEFAULT_SOUND;
+				} else {
+					n.sound = Uri.parse(ringtone);
+				}
+				
+				if (mPrefs.getBoolean("pref_notification_vibrate", false)) {
+					n.vibrate = new long[] { 100, 250, 100, 250 };
+				}
+				
 	            mNotificationManager.notify(R.string.notify_nick_in_chat, n);
 			}
 		}
