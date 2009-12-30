@@ -23,16 +23,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	
 	<PreferenceCategory
-		android:title="@string/general_pref_label">
-		
-		<CheckBoxPreference
-			android:key="pref_large_font_key"
-			android:title="@string/pref_large_font_label"
-			android:defaultValue="false" />
-			
-	</PreferenceCategory>
-	
-	<PreferenceCategory
 	   android:title="@string/notification_pref_label">
 	
 	   <CheckBoxPreference
@@ -51,11 +41,41 @@
        <CheckBoxPreference
             android:key="pref_notification_vibrate"
             android:title="@string/pref_notification_vibrate_title"
-            android:summary="@string/pref_notification_vibrate_desc" />
+            android:summary="@string/pref_notification_vibrate_desc"
+ 			android:dependency="pref_notification_bar"/>
                 
 	</PreferenceCategory>
 	
 	<PreferenceCategory
+		android:title="@string/pref_information_label">
+		
+		<Preference
+			android:key="software_version"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/software_version_title"
+			android:summary="@string/software_version" />
+			
+		<Preference
+			android:key="software_license"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/software_license_title"
+			android:summary="@string/software_license" />
+			
+		<Preference
+			android:key="software_support"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/software_support_title"
+			android:summary="@string/software_support" />
+			
+		<Preference
+			android:key="software_bugs"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/software_bugs_title"
+			android:summary="@string/software_bugs" />
+			
+	</PreferenceCategory>
+	
+	<!--<PreferenceCategory
 		android:title="@string/logging_pref_label">
 	
 		<CheckBoxPreference
@@ -69,6 +89,6 @@
 			android:title="@string/pref_only_notify_nick"
 			android:summary="@string/pref_only_notify_nick_desc"
 			android:defaultValue="false" />
-	</PreferenceCategory>
+	</PreferenceCategory>-->
 
 </PreferenceScreen>

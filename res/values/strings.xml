@@ -99,6 +99,16 @@
     <string name="pref_notification_vibrate_title">Vibrate</string>
     <string name="pref_notification_vibrate_desc">Also vibrate when message received.</string>
     
+	<string name="pref_information_label">About</string>
+	<string name="software_version_title">Software Version</string>
+	<string name="software_version">0.5</string>
+	<string name="software_license_title">Software License</string>
+	<string name="software_license">General Public License v2</string>
+	<string name="software_support_title">Contact Support</string>
+	<string name="software_support">support@androidnerds.org</string>
+	<string name="software_bugs_title">File a bug</string>
+	<string name="software_bugs">http://code.google.com/p/aksunai</string>
+	
     <string name="logging_pref_label">Logging Settings</string>
     <string name="pref_logging_enabled_label">Enabled Logging</string>
     <string name="pref_logging_enabled_desc">Log chat messages to the sdcard</string>
