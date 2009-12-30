@@ -62,7 +62,7 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
     private ChatActivity mChatActivity;
     protected SharedPreferences mPrefs;
     public Map<String, Server> mConnections = Collections.synchronizedMap(new LowerHashMap<Server>());
-    private boolean running = false;
+    public static boolean running = false;
 	
     @Override
     public void onCreate() {
@@ -83,6 +83,11 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
        	Log.d(AppConstants.CHAT_TAG, "Service is being destroyed");
     }
 
+	@Override
+	public void onStart(Intent intent, int startId) {
+		
+	}
+	
     protected void stop() {
         if (mConnections.isEmpty()) {
             running = false;
@@ -133,10 +138,6 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         }
 		
         return true;
-    }
-    
-    public boolean isRunning() {
-        return running;
     }
 	
     public class ChatBinder extends Binder {
