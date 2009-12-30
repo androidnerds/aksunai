@@ -138,6 +138,9 @@ public class ChatView extends ListView {
             if (message.mCommand == Command.NICK) {
                 formatted.append(sender).append(" " + mChatActivity.getString(R.string.nick_change) + " ").append(text);
                 setColor(formatted, "nick");
+            } else if (message.mCommand == Command.ACTION) { /* CTCP ACTION message */
+                formatted.append("* " + sender + " " + text);
+                setColor(formatted, "action");
             } else if (sender.toString().toLowerCase().equals(nick.toLowerCase())) { /* own message */
                 if (!message.mParameters[0].toLowerCase().equals(mMessageListName.toLowerCase())) { /* private message or notice to somebody else */
                     formatted.append(">" + message.mParameters[0] + "< ").append(text);

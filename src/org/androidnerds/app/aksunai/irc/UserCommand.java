@@ -64,8 +64,9 @@ public enum UserCommand {
     PONG ("PONG"),                  // PONG :text
 
     /* CTCP messages */
+    /* CTCP messages are PRIVMSGs with the actual message (command and text) surrounded by \u0001 characters */
     CTCP ("CTCP"),                  // CTCP nick COMMAND (with COMMAND in { VERSION, SOURCE, USERINFO, CLIENTINFO, ERRMSG, PING, TIME })
-    ACTION ("ME"),                  // ACTION :message (converts to CTCP (nick|channel) ACTION)
+    ACTION ("ME"),                  // ME message (converts to CTCP (nick|channel) \u0001ACTION message\u0001)
 
     /* convenient messages (not from the IRC RFC) */
     CLOSE ("CLOSE"),                // CLOSE (does a /part on the current channel or closes the private message window)
