@@ -4,3 +4,4 @@ local.properties
 *~
 tests/bin
 tests/gen
+*.tmproj
