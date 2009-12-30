@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import org.androidnerds.app.aksunai.service.ChatManager;
 
@@ -29,15 +30,15 @@ public class NetworkReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context c, Intent i) {		
 		if (ChatManager.running) {
-			NetworkInfo n = (NetworkInfo) i.getExtras().get("NetworkInfo");
+			NetworkInfo n = (NetworkInfo) i.getExtras().get("networkInfo");
 			Intent manager = new Intent(c, ChatManager.class);
-		
+			
 			if (n.isConnected()) {
 				manager.putExtra("connected", true);
 			} else {
 				manager.putExtra("connected", false);
 			}
-			
+						
 			c.startService(manager);
 		}
 	}

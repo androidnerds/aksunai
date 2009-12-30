@@ -85,7 +85,18 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 
 	@Override
 	public void onStart(Intent intent, int startId) {
+		Log.d(AppConstants.CHAT_TAG, "ChatManager is being started.");
 		
+		if (intent.hasExtra("connected")) {
+			boolean connected = intent.getExtras().getBoolean("connected");
+			
+			if (connected) {
+				Log.d(AppConstants.CHAT_TAG, "We can connect to the network again.");
+				
+				Log.d(AppConstants.CHAT_TAG, "How many active connections are there? " + mConnections.size());
+				
+			}
+		}
 	}
 	
     protected void stop() {
