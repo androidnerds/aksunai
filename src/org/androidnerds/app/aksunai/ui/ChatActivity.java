@@ -154,9 +154,11 @@ public class ChatActivity extends Activity {
 				ServerDetail details = new ServerDetail(ChatActivity.this, extras.getLong("id"));
 				
                 boolean found = false;
-                for (Server s : mManager.mConnections.values()) {
-                    if (s.mName.equals(details.mName)) {
-                        found = true;
+                synchronized(mManager.mConnections) {
+                    for (Server s : mManager.mConnections.values()) {
+                        if (s.mName.equals(details.mName)) {
+                            found = true;
+                        }
                     }
                 }
 
@@ -297,27 +299,31 @@ public class ChatActivity extends Activity {
 
     public Runnable updateChatViews = new Runnable() {
         public void run() {
-            for (Server s : mManager.mConnections.values()) {
-                ChatView chat;
-                //create a view for the server itself
-                if (getChatView(s.mName, s.mName) == null) {
-                    chat = new ChatView(ChatActivity.this, s.mName, s.mName);
-                    chat.setOnTouchListener(gestureListener);
-
-                    if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s.mName);
-                    mFlipper.addView(chat);
-                }
-
-                //we need to setup a view for each channel/pm in this server
-                for (MessageList mlist : s.mMessageLists.values()) {
-                    if (getChatView(s.mName, mlist.mName) == null) {
-                        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
-                        chat = new ChatView(ChatActivity.this, s.mName, mlist.mName);
+            synchronized(mManager.mConnections) {
+                for (Server s : mManager.mConnections.values()) {
+                    ChatView chat;
+                    //create a view for the server itself
+                    if (getChatView(s.mName, s.mName) == null) {
+                        chat = new ChatView(ChatActivity.this, s.mName, s.mName);
                         chat.setOnTouchListener(gestureListener);
-                    
-                        // TODO: add the view in the correct place to respect order (by server, and then alphabetically?): added in front for now
-                        mFlipper.addView(chat, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-                        mFlipper.setDisplayedChild(0);
+
+                        if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for Server: " + s.mName);
+                        mFlipper.addView(chat);
+                    }
+
+                    //we need to setup a view for each channel/pm in this server
+                    synchronized(s.mMessageLists) {
+                        for (MessageList mlist : s.mMessageLists.values()) {
+                            if (getChatView(s.mName, mlist.mName) == null) {
+                                if (AppConstants.DEBUG) Log.d(AppConstants.CHAT_TAG, "Create ChatView for MessageList: " + mlist);
+                                chat = new ChatView(ChatActivity.this, s.mName, mlist.mName);
+                                chat.setOnTouchListener(gestureListener);
+                            
+                                // TODO: add the view in the correct place to respect order (by server, and then alphabetically?): added in front for now
+                                mFlipper.addView(chat, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+                                mFlipper.setDisplayedChild(0);
+                            }
+                        }
                     }
                 }
             }

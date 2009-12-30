@@ -99,9 +99,11 @@ public class Server extends MessageList {
             MessageList mlist = new MessageList(type, name);
             mMessageLists.put(name, mlist);
         }
-        for (MessageListListener mll: mMessageListListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new MessageList: " + name);
-            mll.onNewMessageList(this.mName, name);
+        synchronized(mMessageListListeners) {
+            for (MessageListListener mll: mMessageListListeners) {
+                if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about new MessageList: " + name);
+                mll.onNewMessageList(this.mName, name);
+            }
         }
     }
 
@@ -111,9 +113,11 @@ public class Server extends MessageList {
      * @param name the name of the Channel left
      */
     public void notifyCloseMessageList(String name) {
-        for (MessageListListener mll: mMessageListListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a MessageList closing: " + name);
-            mll.onCloseMessageList(this.mName, name);
+        synchronized(mMessageListListeners) {
+            for (MessageListListener mll: mMessageListListeners) {
+                if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners about a MessageList closing: " + name);
+                mll.onCloseMessageList(this.mName, name);
+            }
         }
         // TODO: drop the MessageList
     }
@@ -141,9 +145,11 @@ public class Server extends MessageList {
      * notifies the listeners that the nickname is already in use
      */
     public void notifyNickInUse() {
-        for (IRCListener il: mIRCListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
-            il.onNickInUse(this.mName);
+        synchronized(mIRCListeners) {
+            for (IRCListener il: mIRCListeners) {
+                if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the nickname is already in use");
+                il.onNickInUse(this.mName);
+            }
         }
     }
 
@@ -151,9 +157,11 @@ public class Server extends MessageList {
      * notifies the listeners that the user is connected
      */
     public void notifyConnected() {
-        for (IRCListener il: mIRCListeners) {
-            if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user is connected");
-            il.onConnected(this.mName);
+        synchronized(mIRCListeners) {
+            for (IRCListener il: mIRCListeners) {
+                if (AppConstants.DEBUG) Log.d(AppConstants.IRC_TAG, "Notifying listeners that the user is connected");
+                il.onConnected(this.mName);
+            }
         }
     }
 
@@ -212,8 +220,10 @@ public class Server extends MessageList {
         case USERS:
             String[] users = msg.mText.split(" ");
             channel = (Channel) mMessageLists.get(msg.mParameters[msg.mParameters.length -1]);
-            for (String user: users) {
-                channel.addUser(user);
+            synchronized(users) {
+                for (String user: users) {
+                    channel.addUser(user);
+                }
             }
             break;
         case NO_NICK:
@@ -229,19 +239,21 @@ public class Server extends MessageList {
             if (msg.mSender.equals(mNick)) {
                 mNick = msg.mText;
             }
-            for (MessageList ml: mMessageLists.values()) {
-                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
-                    (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
+            synchronized(mMessageLists) {
+                for (MessageList ml: mMessageLists.values()) {
+                    if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).mUsers.contains(msg.mSender)) || /* channels which have this user */
+                        (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
 
-                    if (ml.mType == MessageList.Type.CHANNEL) {
-                        ((Channel) ml).removeUser(msg.mSender);
-                        ((Channel) ml).addUser(msg.mText);
-                    } else { /* change the title of the Private */
-                        mMessageLists.remove(ml.mName);
-                        ml.mName = msg.mText;
-                        mMessageLists.put(ml.mName, ml);
+                        if (ml.mType == MessageList.Type.CHANNEL) {
+                            ((Channel) ml).removeUser(msg.mSender);
+                            ((Channel) ml).addUser(msg.mText);
+                        } else { /* change the title of the Private */
+                            mMessageLists.remove(ml.mName);
+                            ml.mName = msg.mText;
+                            mMessageLists.put(ml.mName, ml);
+                        }
+                        storeAndNotify(msg, ml);
                     }
-                    storeAndNotify(msg, ml);
                 }
             }
             break;
@@ -254,14 +266,16 @@ public class Server extends MessageList {
             }
             break;
         case QUIT:
-            for (MessageList ml: mMessageLists.values()) {
-                if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).getUsers().contains(msg.mSender)) || /* channels which have this user */
-                    (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
+            synchronized(mMessageLists) {
+                for (MessageList ml: mMessageLists.values()) {
+                    if ((ml.mType == MessageList.Type.CHANNEL && ((Channel) ml).getUsers().contains(msg.mSender)) || /* channels which have this user */
+                        (ml.mType == MessageList.Type.PRIVATE && ml.mName.equals(msg.mSender))) { /* private message with this user */
 
-                    if (ml.mType == MessageList.Type.CHANNEL) {
-                        ((Channel) ml).removeUser(msg.mSender);
+                        if (ml.mType == MessageList.Type.CHANNEL) {
+                            ((Channel) ml).removeUser(msg.mSender);
+                        }
+                        storeAndNotify(msg, ml);
                     }
-                    storeAndNotify(msg, ml);
                 }
             }
             break;
@@ -295,8 +309,10 @@ public class Server extends MessageList {
             if (msg.mSender == null) { /* server notice */
                 storeAndNotify(msg, this);
             } else { /* user notice, display in each active window */
-                for (MessageList ml: mMessageLists.values()) {
-                    storeAndNotify(msg, ml);
+                synchronized(mMessageLists) {
+                    for (MessageList ml: mMessageLists.values()) {
+                        storeAndNotify(msg, ml);
+                    }
                 }
             }
             break;

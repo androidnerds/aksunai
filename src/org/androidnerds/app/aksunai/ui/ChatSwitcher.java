@@ -54,25 +54,27 @@ public class ChatSwitcher extends Dialog {
         setContentView(R.layout.chat_switcher_dialog);
         mContainer = (ViewGroup) findViewById(R.id.pseudogallery);
         
-        for (MessageList c : mServer.mMessageLists.values()) {
-            LayoutInflater inflater = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v = inflater.inflate(R.layout.chat_switcher_item, null);
+        synchronized(mServer.mMessageLists) {
+            for (MessageList c : mServer.mMessageLists.values()) {
+                LayoutInflater inflater = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View v = inflater.inflate(R.layout.chat_switcher_item, null);
 
-            TextView tv = (TextView) v.findViewById(R.id.switcher_chat_title);
-            tv.setText(c.mName);
+                TextView tv = (TextView) v.findViewById(R.id.switcher_chat_title);
+                tv.setText(c.mName);
 
-            ImageView iv = (ImageView) v.findViewById(R.id.avatar);
-            
-            if (c.mType == MessageList.Type.PRIVATE) {
-            	iv.setImageResource(R.drawable.chat);
-            } else if (c.mType == MessageList.Type.CHANNEL){
-            	iv.setImageResource(R.drawable.channel);
-            } else {
-            	iv.setImageResource(R.drawable.server);
-        	}
-            
-            v.setOnClickListener(mClickListener);
-            mContainer.addView(v);
+                ImageView iv = (ImageView) v.findViewById(R.id.avatar);
+                
+                if (c.mType == MessageList.Type.PRIVATE) {
+                    iv.setImageResource(R.drawable.chat);
+                } else if (c.mType == MessageList.Type.CHANNEL){
+                    iv.setImageResource(R.drawable.channel);
+                } else {
+                    iv.setImageResource(R.drawable.server);
+                }
+                
+                v.setOnClickListener(mClickListener);
+                mContainer.addView(v);
+            }
         }
 
         mContainer.requestLayout();

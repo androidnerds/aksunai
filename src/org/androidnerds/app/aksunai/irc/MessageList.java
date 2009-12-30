@@ -72,8 +72,10 @@ public class MessageList {
      * notifies the listeners that a new message is available.
      */
     public void notifyNewMessage(String message, String server, String list) {
-        for (NewMessageListener nml: mNewMessageListeners) {
-            nml.onNewMessage(message, server, list);
+        synchronized(mNewMessageListeners) {
+            for (NewMessageListener nml: mNewMessageListeners) {
+                nml.onNewMessage(message, server, list);
+            }
         }
     }
 
