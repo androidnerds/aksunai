@@ -62,7 +62,7 @@ public enum UserCommand {
     ADMIN ("ADMIN"),                // ADMIN [server]
     INFO ("INFO"),                  // INFO [server]
     PONG ("PONG"),                  // PONG :text
-
+	
     /* CTCP messages */
     /* CTCP messages are PRIVMSGs with the actual message (command and text) surrounded by \u0001 characters */
     CTCP ("CTCP"),                  // CTCP nick COMMAND (with COMMAND in { VERSION, SOURCE, USERINFO, CLIENTINFO, ERRMSG, PING, TIME })

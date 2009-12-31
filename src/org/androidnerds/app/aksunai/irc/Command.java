@@ -35,6 +35,7 @@ public enum Command {
     NICK_IN_USE ("433"),            // :server 433 * nick :Nickname is already in use
     NICK_COLLISION ("434"),         // :server 434 ???
     OTHER (""),
+	ERROR ("ERROR"),
 
     /* user queries */
     NICK ("NICK"),                  // :nick!n=user@host NICK :newnick

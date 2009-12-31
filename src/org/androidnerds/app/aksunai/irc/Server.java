@@ -319,6 +319,9 @@ public class Server extends MessageList {
         case PING:
             sendMessage("PONG :" + msg.mText);
             break;
+		case ERROR:
+			//i dont want to do anything with this right now.
+			break;
         case ACTION:
             dest = msg.mParameters[0];
             if (dest.equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */
