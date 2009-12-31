@@ -63,6 +63,7 @@ public class ConnectionManager {
     
     public void closeConnection(Server s) {
     	ConnectionThread t = mConnections.get(s);
+		t.sendMessage("QUIT :Client Closed.");
     	t.disconnect();
     	
     	if (AppConstants.DEBUG) {
@@ -71,5 +72,14 @@ public class ConnectionManager {
     	
     	mConnections.remove(s);
     }
+
+	public void restartConnection(Server s) {
+		ConnectionThread t = mConnections.get(s);
+		
+		Thread thr = new Thread(t);
+		thr.start();
+		
+		//mConnections.put(s, t);
+	}
 }
 

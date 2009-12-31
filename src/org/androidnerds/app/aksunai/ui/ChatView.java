@@ -56,27 +56,31 @@ public class ChatView extends ListView {
 
         this.mServerName = serverName;
         this.mMessageListName = messageListName;
-        
+        		
         setStackFromBottom(true);
         setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL); // TODO: check why this doesn't work
         setDividerHeight(0);
         
-        this.setAdapter(new ChatAdapter(chatActivity));
+        this.setAdapter(new ChatAdapter(chatActivity, serverName, messageListName));
 	}
-
-    private class ChatAdapter extends ArrayAdapter implements NewMessageListener {
+	
+    private static class ChatAdapter extends ArrayAdapter implements NewMessageListener {
         private ChatActivity mChatActivity;
         private LayoutInflater mInflater;
         private ChatManager mManager;
         private HashMap<String, Integer> mColorMap;
-
-        public ChatAdapter(ChatActivity chatActivity) {
+		private String serverName;
+		private String messageListName;
+		
+        public ChatAdapter(ChatActivity chatActivity, String serverName, String messageListName) {
             super(chatActivity, R.layout.chat_row);
 
             this.mChatActivity = chatActivity;
             this.mInflater = chatActivity.getLayoutInflater();
             this.mManager = chatActivity.mManager;
-
+			this.serverName = serverName;
+			this.messageListName = messageListName;
+			
             /* initialize the hashmap holding the colors */
             mColorMap = new HashMap<String, Integer>();
             mColorMap.put("sender", mChatActivity.getResources().getColor(R.color.sender));
@@ -89,7 +93,7 @@ public class ChatView extends ListView {
             mColorMap.put("topic", mChatActivity.getResources().getColor(R.color.topic));
             mColorMap.put("nick", mChatActivity.getResources().getColor(R.color.nick));
 
-            this.mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName).setOnNewMessageListener(this);
+            this.mManager.mConnections.get(serverName).mMessageLists.get(messageListName).setOnNewMessageListener(this);
         }
 
         public View getView(int pos, View convertView, ViewGroup parent) {
@@ -104,7 +108,7 @@ public class ChatView extends ListView {
                 holder = (TextView) convertView.getTag();
             }
 
-            MessageList mlist = mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName);
+            MessageList mlist = mManager.mConnections.get(serverName).mMessageLists.get(messageListName);
             holder.setText(ChatMessageFormattedString(mlist.mMessages.get(pos)));
 
             Linkify.addLinks(holder, Linkify.ALL);
@@ -113,7 +117,7 @@ public class ChatView extends ListView {
         }
 
         public int getCount() {
-            MessageList mlist = mManager.mConnections.get(mServerName).mMessageLists.get(mMessageListName);
+            MessageList mlist = mManager.mConnections.get(serverName).mMessageLists.get(messageListName);
             return mlist.mMessages.size();
         }
 
@@ -128,7 +132,7 @@ public class ChatView extends ListView {
         };
         
         private SpannableStringBuilder ChatMessageFormattedString(Message message) {
-            String nick = mManager.mConnections.get(mServerName).mNick;
+            String nick = mManager.mConnections.get(serverName).mNick;
             nick = (nick != null) ? nick : "!notset!";
 
             SpannableStringBuilder formatted = new SpannableStringBuilder();
@@ -138,8 +142,11 @@ public class ChatView extends ListView {
             if (message.mCommand == Command.NICK) {
                 formatted.append(sender).append(" " + mChatActivity.getString(R.string.nick_change) + " ").append(text);
                 setColor(formatted, "nick");
+			} else if (message.mCommand == Command.ACTION) { /* CTCP ACTION message */
+				formatted.append("* " + sender + " " + text);
+				setColor(formatted, "action");
             } else if (sender.toString().toLowerCase().equals(nick.toLowerCase())) { /* own message */
-                if (!message.mParameters[0].toLowerCase().equals(mMessageListName.toLowerCase())) { /* private message or notice to somebody else */
+                if (!message.mParameters[0].toLowerCase().equals(messageListName.toLowerCase())) { /* private message or notice to somebody else */
                     formatted.append(">" + message.mParameters[0] + "< ").append(text);
                 } else {
                     formatted.append(sender).append(": ").append(text);
@@ -185,4 +192,8 @@ public class ChatView extends ListView {
             return msg;
         }
     }
+
+	public String toString() {
+		return "ChatView :: Server: " + mServerName + "; MessageList: " + mMessageListName;
+	}
 }

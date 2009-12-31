@@ -92,8 +92,10 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
 			
 			if (connected) {
 				Log.d(AppConstants.CHAT_TAG, "We can connect to the network again.");
-				
-				Log.d(AppConstants.CHAT_TAG, "How many active connections are there? " + mConnections.size());
+								
+				for (Server s : mConnections.values()) {
+					mConnectionManager.restartConnection(s);
+				}
 				
 			}
 		}
@@ -103,9 +105,15 @@ public class ChatManager extends Service implements OnSharedPreferenceChangeList
         if (mConnections.isEmpty()) {
             running = false;
         	stopSelf();
-
         }
     }
+	
+	public void disconnectServer(String server) {
+		Server s = mConnections.get(server);
+		
+		mConnections.remove(server.toLowerCase());
+		mConnectionManager.closeConnection(s);		
+	}
 	
     public void openServerConnection(ChatActivity chatActivity, ServerDetail details) {
         this.mChatActivity = chatActivity;

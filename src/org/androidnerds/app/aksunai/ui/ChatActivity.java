@@ -45,6 +45,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import java.util.ArrayList;
+
 import org.androidnerds.app.aksunai.R;
 import org.androidnerds.app.aksunai.data.ServerDetail;
 import org.androidnerds.app.aksunai.irc.Channel;
@@ -204,8 +206,7 @@ public class ChatActivity extends Activity {
             showChatDialog();
             break;
         case R.id.menu_disconnect:
-            sendUserMessage("/quit");
-            //ConnectionService.disconnectFromServer(ConnectionService.activeServer);
+            disconnectFromServer();
             break;
         case R.id.menu_show_user_list:
             ChatView chat = (ChatView) mFlipper.getCurrentView();
@@ -297,6 +298,36 @@ public class ChatActivity extends Activity {
         runOnUiThread(updateChatViews);
     }
 
+	private void disconnectFromServer() {
+		ChatView current = (ChatView) mFlipper.getCurrentView();
+		String server = current.mServerName;
+		ArrayList<ChatView> trash = new ArrayList<ChatView>();
+		
+		Log.d(AppConstants.CHAT_TAG, "ChatView count is: " + mFlipper.getChildCount());
+		
+		for (int i = 0; i < mFlipper.getChildCount(); i++) {
+			ChatView chat = (ChatView) mFlipper.getChildAt(i);
+			
+			Log.d(AppConstants.CHAT_TAG, chat.toString());
+						
+			if (chat.mServerName.equals(server)) {
+				trash.add(chat);
+			}
+		}
+		
+		for (ChatView v : trash) {
+			mFlipper.removeView(v);
+		}
+		
+		trash = null;
+		
+		mManager.disconnectServer(server);
+		
+		if (mFlipper.getChildCount() == 0) {
+			finish();
+		}
+	}
+	
     public Runnable updateChatViews = new Runnable() {
         public void run() {
             synchronized(mManager.mConnections) {
