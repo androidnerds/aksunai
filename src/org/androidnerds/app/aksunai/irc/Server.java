@@ -182,10 +182,10 @@ public class Server extends MessageList {
     }
 
     /**
-     * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionManager}, formats it,
+     * takes a raw string (server message from the {@link org.androidnerds.app.aksunai.net.ConnectionThread}, formats it,
      * and adds it to the appropriate message list.
      *
-     * @param message a String containg the raw message received from the connection
+     * @param message a String containing the raw message received from the connection
      */
     public void receiveMessage(String message) {
         Message msg = new Message(message);
@@ -319,6 +319,24 @@ public class Server extends MessageList {
         case PING:
             sendMessage("PONG :" + msg.mText);
             break;
+        case ACTION:
+            dest = msg.mParameters[0];
+            if (dest.equals(mNick)) { /* private message :from_nick PRIVMSG to_nick :text */
+                mlist = mMessageLists.get(msg.mSender);
+                if (mlist == null) {
+                    notifyNewMessageList(msg.mSender, MessageList.Type.PRIVATE);
+                    mlist = mMessageLists.get(msg.mSender);
+                }
+            } else { /* channel :from_nick PRIVMSG to_channel :text */
+                mlist = mMessageLists.get(dest);
+                if (mlist == null) {
+                    notifyNewMessageList(dest, MessageList.Type.CHANNEL);
+                    mlist = mMessageLists.get(dest);
+                }
+            }
+            storeAndNotify(msg, mlist);
+            break;
+
         // TODO: rest of the parsing
         default:
             storeAndNotify(msg, this);

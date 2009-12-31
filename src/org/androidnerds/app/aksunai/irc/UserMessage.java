@@ -99,6 +99,20 @@ public class UserMessage {
                     formatted = "QUIT :leaving";
                 }
                 break;
+            case CTCP:
+                dest = head(params);
+                String ctcp = tail(params).toUpperCase();
+                formatted = "PRIVMSG " + dest + " :\u0001" + ctcp + "\u0001";
+                msg = new Message(":" + server.mNick + "!n=username@host PRIVMSG " + dest + " :" + ctcp);
+                server.storeAndNotify(msg, server.mMessageLists.get(title)); // add to the active window
+                break;
+            case ACTION:
+                if (params != null && !params.equals("")) {
+                    formatted = "PRIVMSG " + title + " :\u0001ACTION " + params + "\u0001";
+                    msg = new Message(":" + server.mNick + "!n=username@host PRIVMSG " + title + " :\u0001ACTION " + params + "\u0001");
+                    server.storeAndNotify(msg, server.mMessageLists.get(title));
+                }
+                break;
             case CLOSE: /* shortcut to either /part the current channel or close the current private message window */
                 server.notifyCloseMessageList(title);
                 if (server.mMessageLists.get(title).mType == MessageList.Type.CHANNEL) { /* called "/close" on a channel => convert to /part */

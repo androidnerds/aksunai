@@ -57,6 +57,18 @@ public enum Command {
     /* miscellaneous messages */
     PING ("PING"),                  // PING :server
 
+    /* CTCP messages */
+    /* CTCP messages are PRIVMSGs with the actual message (command and text) surrounded by \u0001 characters */
+    VERSION ("VERSION"),            // :nick!n=user@host PRIVMSG (nick|channel) :\u0001VERSION\u0001
+    SOURCE ("SOURCE"),              // :nick!n=user@host PRIVMSG (nick|channel) :\u0001SOURCE\u0001
+    USERINFO ("USERINFO"),          // :nick!n=user@host PRIVMSG (nick|channel) :\u0001USERINFO\u0001
+    CLIENTINFO ("CLIENTINFO"),      // :nick!n=user@host PRIVMSG (nick|channel) :\u0001CLIENTINFO\u0001
+    ERRMSG ("ERRMSG"),              // :nick!n=user@host PRIVMSG (nick|channel) :\u0001ERRMSG\u0001
+    // following is commented as the PING command is already declared
+    //PING ("PING"),                  // :nick!n=user@host PRIVMSG (nick|channel) :\u0001PING\u0001
+    TIME ("TIME"),                  // :nick!n=user@host PRIVMSG (nick|channel) :\u0001TIME\u0001
+    ACTION ("ACTION"),              // :nick!n=user@host PRIVMSG (nick|channel) :\u0001ACTION text\u0001
+
     /* unknown command */
     UNKNOWN ("UNKNOWN");
 

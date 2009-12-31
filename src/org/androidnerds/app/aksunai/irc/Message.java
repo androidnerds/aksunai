@@ -75,6 +75,21 @@ public class Message {
                 this.mParameters = parts[2].split(" ");
             }
         }
+
+        if (this.mCommand == Command.PRIVMSG &&
+            this.mText != null &&
+            this.mText.startsWith("\u0001") &&
+            this.mText.endsWith("\u0001")) { /* is it a CTCP message? */
+
+                String tmp = this.mText.replace("\u0001", "");
+                String[] parts = tmp.split(" ", 2);
+                this.mCommand = getCommand(parts[0]);
+                if (parts.length == 2) {
+                    this.mText = parts[1];
+                }
+        }
+
+        System.out.println(this);
     }
 
     /**
@@ -107,8 +122,10 @@ public class Message {
      */
     public String toString() {
         String parameters = "";
-        for (String param: mParameters) {
-            parameters += param + " ";
+        if (mParameters != null) {
+            for (String param: mParameters) {
+                parameters += param + " ";
+            }
         }
         parameters = parameters.trim();
         return "timestamp=" + mTimestamp + " sender=" + mSender + " command=" + mCommand + " parameters=[" + parameters + "] text=" + mText;
